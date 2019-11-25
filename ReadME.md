@@ -2,7 +2,7 @@
 This is the source code for the first place solution to the [RSNA2019 Intracranial Hemorrhage Detection Challenge](https://www.kaggle.com/c/rsna-intracranial-hemorrhage-detection). 
 Video with quick overview: 
 
-##Solutuoin Overview
+## Solutuoin Overview
 ![image](https://github.com/SeuTao/RSNA2019_1st_place_solution/blob/master/png/overview.png)
 
 #### Dependencies
@@ -13,7 +13,7 @@ Video with quick overview:
 - torch==1.1.0
 - torchvision==0.2.1
 
-###code
+### code
 - 2dCNN
 - SequenceModel
 

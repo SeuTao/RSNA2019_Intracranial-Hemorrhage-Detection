@@ -8,7 +8,7 @@ import random
 
 if 0:
     def save_study():
-        all_df = pd.read_csv(r'train_meta_id_seriser.csv')
+        all_df = pd.read_csv(r'./csv/train_meta_id_seriser.csv')
         StudyInstance = list(all_df['StudyInstance'].unique())
         random.shuffle(StudyInstance)
 
@@ -21,7 +21,7 @@ if 0:
                 df.to_csv(save_path)
                 print(study)
 
-        all_df = pd.read_csv(r'test_meta_id_seriser_stage2.csv')
+        all_df = pd.read_csv(r'./csv/test_meta_id_seriser_stage2.csv')
         StudyInstance = list(all_df['StudyInstance'].unique())
         random.shuffle(StudyInstance)
 
@@ -70,10 +70,9 @@ if 1:
 
 #################################################################################################################
     # ============================================================================================================
-    # #yl
-    for model_name in ['dsn121_256_fine', 'dsn121_512_fine', 'dsn169_256_fine', 'se101_256_fine']:
+    for model_name in os.listdir(os.path.join(feature_path, r'stage2_finetune')):
         print(model_name)
-        val_fea,test_fea = get_train_test_feature(dir = os.path.join(feature_path, r'from_yl_all_tta_stage2_finetune', model_name))
+        val_fea,test_fea = get_train_test_feature(dir = os.path.join(feature_path, r'stage2_finetune', model_name))
         train_features.append(val_fea)
         if test_fea is not None:
             test_features.append(test_fea)
@@ -90,11 +89,11 @@ if 1:
     gc.collect()
 
 if 1:
-    v0 = list(pd.read_csv(os.path.join(fold_path,'val_fold0.csv'))['filename'])
-    v1 = list(pd.read_csv(os.path.join(fold_path,'val_fold1.csv'))['filename'])
-    v2 = list(pd.read_csv(os.path.join(fold_path,'val_fold2.csv'))['filename'])
-    v3 = list(pd.read_csv(os.path.join(fold_path,'val_fold3.csv'))['filename'])
-    v4 = list(pd.read_csv(os.path.join(fold_path,'val_fold4.csv'))['filename'])
+    v0 = list(pd.read_csv('./csv/val_fold0.csv')['filename'])
+    v1 = list(pd.read_csv('./csv/val_fold1.csv')['filename'])
+    v2 = list(pd.read_csv('./csv/val_fold2.csv')['filename'])
+    v3 = list(pd.read_csv('./csv/val_fold3.csv')['filename'])
+    v4 = list(pd.read_csv('./csv/val_fold4.csv')['filename'])
     fea_ids = v0+v1+v2+v3+v4
     fea_ids = [tmp.replace('.dcm','') for tmp in fea_ids]
     fea_id_dict = {}
@@ -104,7 +103,7 @@ if 1:
         fea_id_dict[id] = i
         i += 1
 
-    csv = './folds/stage_2_sample_submission.csv'
+    csv = './csv/stage_2_sample_submission.csv'
     df = pd.read_csv(csv)
     df['filename'] = df['ID'].apply(lambda st: "ID_" + st.split('_')[1] + ".dcm")
     df['type'] = df['ID'].apply(lambda st: st.split('_')[2])

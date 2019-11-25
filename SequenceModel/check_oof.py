@@ -12,27 +12,27 @@ def mutl_log_loss(y_truth,y_pre):
     tmp_loss=log_loss(y_tre_tmp, y_pre_tmp,labels=[0,1])
     return tmp_loss
 
-if not os.path.exists('standard_test.csv'):
+if not os.path.exists('./csv/standard_test.csv'):
     tmp = pd.read_csv('stage_2_sample_submission.csv')
     tmp['filename'] = tmp['ID'].apply(lambda st: "ID_" + st.split('_')[1])
     tmp['type'] = tmp['ID'].apply(lambda st: st.split('_')[2])
     pivot_df = tmp[['Label', 'filename', 'type']].drop_duplicates().pivot(index='filename', columns='type', values='Label').reset_index()
-    pivot_df.to_csv(r'standard_test.csv',index=False)
+    pivot_df.to_csv(r'./csv/standard_test.csv',index=False)
 
 if not os.path.exists('standrad.csv'):
     tmp = pd.read_csv(train_csv)
     tmp['filename'] = tmp['ID'].apply(lambda st: "ID_" + st.split('_')[1])
     tmp['type'] = tmp['ID'].apply(lambda st: st.split('_')[2])
     pivot_df = tmp[['Label', 'filename', 'type']].drop_duplicates().pivot(index='filename', columns='type', values='Label').reset_index()
-    pivot_df.to_csv(r'standard.csv',index=False)
+    pivot_df.to_csv(r'./csv/standard.csv',index=False)
 
-train = r'./standard.csv'
+train = r'./csv/standard.csv'
 train_df = pd.read_csv(train)
 train_df["filename"] = [tmp.replace('.dcm', '') for tmp in train_df["filename"]]
 train_df["filename"] = [tmp.replace('.png', '') for tmp in train_df["filename"]]
 train_ids = train_df['filename']
 
-test = r'./standard_test.csv'
+test = r'./csv/standard_test.csv'
 test_df = pd.read_csv(test)
 test_df["filename"] = [tmp.replace('.dcm', '') for tmp in test_df["filename"]]
 test_df["filename"] = [tmp.replace('.png', '') for tmp in test_df["filename"]]
@@ -71,7 +71,7 @@ if 1:
 
     def get_train_test_predict(dir):
         model_name = os.path.split(dir)[1]
-        train = r'./standard.csv'
+        train = r'./csv/standard.csv'
         train_df = pd.read_csv(train)
 
         pd_tmp = os.path.join(dir,model_name+'_val_prob_TTA_stage2_finetune.csv')
@@ -91,7 +91,7 @@ if 1:
         merge_csv.to_csv(os.path.join(dir, 'DEBUG_'+model_name + '_val_stage2_sample.csv'))
         predict = get_predict(merge_csv)
 
-        train = r'./standard_test.csv'
+        train = r'./csv/standard_test.csv'
         train_df = pd.read_csv(train)
 
         pd_tmp = os.path.join(dir,model_name+'_test_prob_TTA_stage2_finetune.csv')
@@ -121,10 +121,9 @@ if 1:
 
 #################################################################################################################
     #============================================================================================================
-    # pd_tmp
-    for model_name in ['dsn121_256_fine', 'dsn121_512_fine', 'dsn169_256_fine', 'se101_256_fine']:
+    for model_name in os.listdir(os.path.join(feature_path, r'stage2_finetune')):
         print(model_name)
-        val_fea, test_fea = get_train_test_predict(dir = os.path.join(feature_path, r'from_yl_all_tta_stage2_finetune', model_name))
+        val_fea, test_fea = get_train_test_predict(dir = os.path.join(feature_path, r'stage2_finetune', model_name))
         if val_fea is not None:
             train_predicts.append(val_fea)
         if test_fea is not None:
@@ -138,7 +137,7 @@ if 1:
     weight = [2.0, 1.0, 1.0, 1.0, 1.0, 1.0]
     loss = 0
     index = 0
-    merge_csv = pd.read_csv(r'./standard.csv')
+    merge_csv = pd.read_csv(r'./csv/standard.csv')
     for w, type in zip(weight, types):
         label = np.asarray(list(merge_csv[type])).reshape([-1, 1])
         label_list.append(label)

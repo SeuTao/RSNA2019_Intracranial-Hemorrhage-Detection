@@ -5,10 +5,10 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 from seq_dataset import *
 import warnings
-warnings.filterwarnings('ignore')
 import os
-fold_index = 1
+warnings.filterwarnings('ignore')
 
+fold_index = -1
 fold_num = 5
 Add_position = True
 lstm_layers = 2
@@ -143,7 +143,7 @@ class SequenceModel(nn.Module):
 log = open(os.path.join(model_save_dir,'log.txt'),'a')
 if 1:
         kf = KFold(n_splits=fold_num, shuffle=True, random_state=48)
-        all_df = pd.read_csv(r'./folds/train_meta_id_seriser.csv')
+        all_df = pd.read_csv(r'./csv/train_meta_id_seriser.csv')
         StudyInstance = list(all_df['StudyInstance'].unique())
         print(len(StudyInstance))
         dict_ = get_train_dict()
@@ -218,7 +218,7 @@ if 1:
 
 if 1:
     kf = KFold(n_splits=fold_num, shuffle=True, random_state=48)
-    all_df = pd.read_csv(r'./folds/train_meta_id_seriser.csv')
+    all_df = pd.read_csv(r'./csv/train_meta_id_seriser.csv')
     StudyInstance = list(all_df['StudyInstance'].unique())
     print(len(StudyInstance))
     dict_ = get_train_dict()
@@ -310,7 +310,7 @@ if 1:
     log.write('\n')
 
 
-if 0:
+if 1:
     predicts_list = []
     for s_fold in range(fold_num):
         running_loss = 0

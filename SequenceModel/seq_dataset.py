@@ -25,28 +25,14 @@ class StackingDataset_study(Dataset):
         self.mode = mode
 
         if mode == 'train' or mode == 'valid':
-            self.all_df = pd.read_csv(r'./train_meta_id_seriser.csv')
+            self.all_df = pd.read_csv(r'./csv/train_meta_id_seriser.csv')
             self.StudyInstance = list(self.all_df['StudyInstance'].unique())
-
-            print('origin index num:' + str(len(index)))
-
-            study_set = os.listdir(train_stage1_split)
-            study_set = set([tmp[:-6] for tmp in study_set])
-            split_study_all = os.listdir(train_stage1_split)
-            self.split_study = []
-
-            self.index = []
-            for index_ in index:
-                if self.StudyInstance[index_] not in study_set:
-                    self.index.append(index_)
-                else:
-                    self.split_study += [tmp for tmp in split_study_all if self.StudyInstance[index_] in tmp]
-
-            self.len = len(self.index) + len(self.split_study)
+            self.index = index
+            print('seq num:' + str(len(index)))
 
         elif mode == 'test':
             self.index = index
-            self.all_df = pd.read_csv(r'./test_meta_id_seriser_stage2.csv')
+            self.all_df = pd.read_csv(r'./csv/test_meta_id_seriser_stage2.csv')
             self.StudyInstance = list(self.all_df['StudyInstance'].unique())
             self.len = len(self.StudyInstance)
 
@@ -54,22 +40,11 @@ class StackingDataset_study(Dataset):
         print('mode: '+self.mode)
         print(self.len)
 
-        if mode == 'test':
-            self.all_df = pd.read_csv(r'./test_meta_id_seriser.csv')
-        else:
-            self.all_df = pd.read_csv(r'./test_meta_id_seriser_stage2.csv')
-
     def __getitem__(self, index):
 
         if self.mode == 'train' or self.mode == 'valid':
-
-            if index < len(self.index):
-                index = self.index[index]
-                StudyInstance = self.StudyInstance[index]
-            else:
-                index = index % len(self.index)
-                StudyInstance = self.split_study[index]
-
+            index = self.index[index]
+            StudyInstance = self.StudyInstance[index]
         else:
             StudyInstance = self.StudyInstance[index]
 
@@ -215,7 +190,7 @@ class StackingDataset_study(Dataset):
 
 def run_check_train_data():
     kf = KFold(n_splits=5, shuffle=True, random_state=48)
-    all_df = pd.read_csv(r'./train_meta_id_seriser.csv')
+    all_df = pd.read_csv(r'./csv/train_meta_id_seriser.csv')
     StudyInstance = list(all_df['StudyInstance'].unique())
     print(len(StudyInstance))
     dict_ = get_train_dict()
