@@ -208,7 +208,6 @@ def run_check_train_data():
             print(fea.shape)
             print(image.shape)
             print(label.shape)
-        # break
 
 def run_check_test_data():
     test_id_dict = get_test_dict()

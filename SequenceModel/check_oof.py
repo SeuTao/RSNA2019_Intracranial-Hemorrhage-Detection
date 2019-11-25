@@ -1,26 +1,18 @@
 import os
-import pandas as pd
 import numpy as np
-from sklearn.metrics import log_loss
 import pandas as pd
 import os
 from settings import *
 
-def mutl_log_loss(y_truth,y_pre):
-    y_tre_tmp=y_truth[:,0]
-    y_pre_tmp=y_pre[:,0]
-    tmp_loss=log_loss(y_tre_tmp, y_pre_tmp,labels=[0,1])
-    return tmp_loss
-
 if not os.path.exists('./csv/standard_test.csv'):
-    tmp = pd.read_csv('stage_2_sample_submission.csv')
+    tmp = pd.read_csv('./csv/stage_2_sample_submission.csv')
     tmp['filename'] = tmp['ID'].apply(lambda st: "ID_" + st.split('_')[1])
     tmp['type'] = tmp['ID'].apply(lambda st: st.split('_')[2])
     pivot_df = tmp[['Label', 'filename', 'type']].drop_duplicates().pivot(index='filename', columns='type', values='Label').reset_index()
     pivot_df.to_csv(r'./csv/standard_test.csv',index=False)
 
-if not os.path.exists('standrad.csv'):
-    tmp = pd.read_csv(train_csv)
+if not os.path.exists('./csv/standrad.csv'):
+    tmp = pd.read_csv('./csv/stage_1_train.csv')
     tmp['filename'] = tmp['ID'].apply(lambda st: "ID_" + st.split('_')[1])
     tmp['type'] = tmp['ID'].apply(lambda st: st.split('_')[2])
     pivot_df = tmp[['Label', 'filename', 'type']].drop_duplicates().pivot(index='filename', columns='type', values='Label').reset_index()
@@ -119,8 +111,6 @@ if 1:
     train_predicts = []
     test_predicts= []
 
-#################################################################################################################
-    #============================================================================================================
     for model_name in os.listdir(os.path.join(feature_path, r'stage2_finetune')):
         print(model_name)
         val_fea, test_fea = get_train_test_predict(dir = os.path.join(feature_path, r'stage2_finetune', model_name))
@@ -128,8 +118,6 @@ if 1:
             train_predicts.append(val_fea)
         if test_fea is not None:
             test_predicts.append(test_fea)
-
-#================================================================================================================
 
 if 1:
     label_list = []
@@ -142,24 +130,6 @@ if 1:
         label = np.asarray(list(merge_csv[type])).reshape([-1, 1])
         label_list.append(label)
     label = np.concatenate(label_list,axis =1)
-
-if 1:
-    def get(label, predict):
-        weight= [2.0,1.0,1.0,1.0,1.0,1.0]
-        loss = 0
-        for index in range(6):
-            label_tmp = label[:, index].reshape([-1, 1])
-            tmp = predict[: , index].reshape([-1, 1])
-            loss  += weight[index]*mutl_log_loss(label_tmp, tmp)
-            index += 1
-        loss /= sum(weight)
-        return loss
-
-    for model in train_predicts:
-        print(model.shape)
-        loss = get(label, model)
-        print(loss)
-
 
 X_list = []
 X_test_list = []

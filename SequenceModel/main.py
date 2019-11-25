@@ -9,7 +9,7 @@ import os
 warnings.filterwarnings('ignore')
 
 fold_index = -1
-fold_num = 5
+fold_num = 10
 Add_position = True
 lstm_layers = 2
 seq_len = 24
@@ -30,12 +30,6 @@ def bce_loss(input, target, OHEM_percent=None, class_num = None):
         loss = F.binary_cross_entropy_with_logits(input, target, reduce=False)
         value, index= loss.topk(int(class_num * OHEM_percent), dim=1, largest=True, sorted=True)
         return value.mean()
-
-def mutl_log_loss(y_truth,y_pre,index):
-    y_tre_tmp=y_truth[:,index]
-    y_pre_tmp=y_pre[:,index]
-    tmp_loss=log_loss(y_tre_tmp, y_pre_tmp,labels=[0,1])
-    return tmp_loss
 
 def criterion(logit, labels):
     w = [2.0,1.0,1.0,1.0,1.0,1.0]

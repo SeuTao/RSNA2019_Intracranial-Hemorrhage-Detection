@@ -14,10 +14,12 @@ Video with quick overview:
 - torchvision==0.2.1
 
 ### code
-- 2dCNN
+- 2DCNN
 - SequenceModel
 
-After single models training,  the oof files will be saved in ./SingleModelOutput(three folders for three pipelines). For the final sequence model training:
+
+After single models training,  the oof files will be saved in ./SingleModelOutput(three folders for three pipelines). 
+
 After training the sequence model, the final submission will be ./FinalSubmission/final_version/submission_tta.csv
 
 ## Final Submission

@@ -6,33 +6,37 @@ import gc
 from settings import *
 import random
 
-if 0:
-    def save_study():
-        all_df = pd.read_csv(r'./csv/train_meta_id_seriser.csv')
-        StudyInstance = list(all_df['StudyInstance'].unique())
-        random.shuffle(StudyInstance)
+def save_study():
+    if not os.path.exists(save_png_path):
+        os.makedirs(save_png_path)
 
-        for study in StudyInstance:
-            save_path = os.path.join(save_png_path, 'study_csv', study + '.csv')
-            if not os.path.exists(save_path):
-                df = all_df[all_df['StudyInstance'] == study]
-                if not os.path.exists(os.path.join(save_png_path, 'study_csv')):
-                    os.makedirs(os.path.join(save_png_path, 'study_csv'))
-                df.to_csv(save_path)
-                print(study)
+    all_df = pd.read_csv(r'./csv/train_meta_id_seriser.csv')
+    StudyInstance = list(all_df['StudyInstance'].unique())
+    random.shuffle(StudyInstance)
 
-        all_df = pd.read_csv(r'./csv/test_meta_id_seriser_stage2.csv')
-        StudyInstance = list(all_df['StudyInstance'].unique())
-        random.shuffle(StudyInstance)
+    for study in StudyInstance:
+        save_path = os.path.join(save_png_path, 'study_csv', study + '.csv')
+        if not os.path.exists(save_path):
+            df = all_df[all_df['StudyInstance'] == study]
+            if not os.path.exists(os.path.join(save_png_path, 'study_csv')):
+                os.makedirs(os.path.join(save_png_path, 'study_csv'))
+            df.to_csv(save_path)
+            print(study)
 
-        for study in StudyInstance:
-            save_path = os.path.join(save_png_path, 'study_csv', study + '.csv')
-            if not os.path.exists(save_path):
-                df = all_df[all_df['StudyInstance'] == study]
-                if not os.path.exists(os.path.join(save_png_path, 'study_csv')):
-                    os.makedirs(os.path.join(save_png_path, 'study_csv'))
-                df.to_csv(save_path)
-                print(study)
+    all_df = pd.read_csv(r'./csv/test_meta_id_seriser_stage2.csv')
+    StudyInstance = list(all_df['StudyInstance'].unique())
+    random.shuffle(StudyInstance)
+
+    for study in StudyInstance:
+        save_path = os.path.join(save_png_path, 'study_csv', study + '.csv')
+        if not os.path.exists(save_path):
+            df = all_df[all_df['StudyInstance'] == study]
+            if not os.path.exists(os.path.join(save_png_path, 'study_csv')):
+                os.makedirs(os.path.join(save_png_path, 'study_csv'))
+            df.to_csv(save_path)
+            print(study)
+
+save_study()
 
 if 1:
     feature_dim = 2048
@@ -69,7 +73,6 @@ if 1:
     test_features = []
 
 #################################################################################################################
-    # ============================================================================================================
     for model_name in os.listdir(os.path.join(feature_path, r'stage2_finetune')):
         print(model_name)
         val_fea,test_fea = get_train_test_feature(dir = os.path.join(feature_path, r'stage2_finetune', model_name))
@@ -77,7 +80,6 @@ if 1:
         if test_fea is not None:
             test_features.append(test_fea)
 #################################################################################################################
-
     train_fea = np.concatenate(train_features,axis=2)
     print(train_fea.shape)
 
@@ -118,3 +120,7 @@ if 1:
         fea_id_dict[id] = i
         i += 1
     a = 0
+
+# if __name__ == '__main__':
+#     save_study()
+
