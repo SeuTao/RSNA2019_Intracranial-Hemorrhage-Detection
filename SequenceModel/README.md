@@ -1,7 +1,5 @@
 # Sequence Models
 
-After 2D CNN model training, we use this sequence model.
-
 ## Sequence Model 1
 ![image](https://github.com/SeuTao/RSNA2019_1st_place_solution/blob/master/png/s1.png)
 
