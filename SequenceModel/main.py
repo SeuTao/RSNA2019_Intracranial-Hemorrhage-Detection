@@ -144,7 +144,7 @@ if 1:
         for s_fold, (train_idx, valid_idx) in enumerate(kf.split(StudyInstance)):
             print('fold ' + str(s_fold))
 
-            if s_fold != fold_index:
+            if s_fold != fold_index and s_fold > 0:
                 continue
 
             batch_size = 128

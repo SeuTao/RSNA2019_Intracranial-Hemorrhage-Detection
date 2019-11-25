@@ -2,24 +2,23 @@ import os
 import pandas as pd
 import numpy as np
 import gc
-
 from settings import *
 import random
 
 def save_study():
-    if not os.path.exists(save_png_path):
-        os.makedirs(save_png_path)
+    if not os.path.exists(study_path):
+        os.makedirs(study_path)
 
     all_df = pd.read_csv(r'./csv/train_meta_id_seriser.csv')
     StudyInstance = list(all_df['StudyInstance'].unique())
     random.shuffle(StudyInstance)
 
     for study in StudyInstance:
-        save_path = os.path.join(save_png_path, 'study_csv', study + '.csv')
+        save_path = os.path.join(study_path, 'study_csv', study + '.csv')
         if not os.path.exists(save_path):
             df = all_df[all_df['StudyInstance'] == study]
-            if not os.path.exists(os.path.join(save_png_path, 'study_csv')):
-                os.makedirs(os.path.join(save_png_path, 'study_csv'))
+            if not os.path.exists(os.path.join(study_path, 'study_csv')):
+                os.makedirs(os.path.join(study_path, 'study_csv'))
             df.to_csv(save_path)
             print(study)
 
@@ -28,15 +27,15 @@ def save_study():
     random.shuffle(StudyInstance)
 
     for study in StudyInstance:
-        save_path = os.path.join(save_png_path, 'study_csv', study + '.csv')
+        save_path = os.path.join(study_path, 'study_csv', study + '.csv')
         if not os.path.exists(save_path):
             df = all_df[all_df['StudyInstance'] == study]
-            if not os.path.exists(os.path.join(save_png_path, 'study_csv')):
-                os.makedirs(os.path.join(save_png_path, 'study_csv'))
+            if not os.path.exists(os.path.join(study_path, 'study_csv')):
+                os.makedirs(os.path.join(study_path, 'study_csv'))
             df.to_csv(save_path)
             print(study)
 
-save_study()
+# save_study()
 
 if 1:
     feature_dim = 2048
@@ -80,6 +79,7 @@ if 1:
         if test_fea is not None:
             test_features.append(test_fea)
 #################################################################################################################
+
     train_fea = np.concatenate(train_features,axis=2)
     print(train_fea.shape)
 
@@ -119,8 +119,6 @@ if 1:
     for id in test_fea_ids:
         fea_id_dict[id] = i
         i += 1
-    a = 0
 
-# if __name__ == '__main__':
-#     save_study()
+
 

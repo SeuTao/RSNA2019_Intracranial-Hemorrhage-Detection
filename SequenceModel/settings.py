@@ -1,5 +1,3 @@
-save_png_path = r'./kaggle_RSNA/RSNA_PNG'
+study_path = r'./csv'
 feature_path = r'./features'
-train_stage1_split = '../'
 final_output_path = r'../FinalSubmission'
-# train_csv = r'./stage_1_train.csv'

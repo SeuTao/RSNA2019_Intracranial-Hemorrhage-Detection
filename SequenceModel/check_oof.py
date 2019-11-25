@@ -104,7 +104,6 @@ if 1:
         merge_csv = pd.merge(train_df, pd_tmp_df, how='left', on='filename')
         merge_csv.to_csv(os.path.join(dir, 'DEBUG_'+model_name + '_test_stage2_sample.csv'))
         predict_test = get_predict(merge_csv)
-
         print(predict_test.shape)
         return predict, predict_test
 

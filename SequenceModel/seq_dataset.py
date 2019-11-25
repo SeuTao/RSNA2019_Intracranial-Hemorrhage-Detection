@@ -28,7 +28,7 @@ class StackingDataset_study(Dataset):
             self.all_df = pd.read_csv(r'./csv/train_meta_id_seriser.csv')
             self.StudyInstance = list(self.all_df['StudyInstance'].unique())
             self.index = index
-            print('seq num:' + str(len(index)))
+            self.len = len(index)
 
         elif mode == 'test':
             self.index = index
@@ -49,12 +49,7 @@ class StackingDataset_study(Dataset):
             StudyInstance = self.StudyInstance[index]
 
         if StudyInstance not in self.study_dict:
-            tmp = os.path.join(train_stage1_split, StudyInstance)
-            if os.path.exists(tmp):
-                print(tmp)
-                self.study_dict[StudyInstance] = pd.read_csv(tmp)
-            else:
-                self.study_dict[StudyInstance] = pd.read_csv(os.path.join(save_png_path, 'study_csv', StudyInstance + '.csv'))
+            self.study_dict[StudyInstance] = pd.read_csv(os.path.join(study_path, 'study_csv', StudyInstance + '.csv'))
 
         same_StudyInstance = self.study_dict[StudyInstance]
         same_StudyInstance.reset_index(drop=True)

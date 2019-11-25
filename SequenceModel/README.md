@@ -9,6 +9,12 @@
 #### Path Setup
 Set data path to your own in ./setting.py
 
+#### download
+https://drive.google.com/open?id=1qYi4k-DuOLJmyZ7uYYrnomU2U7MrYRBV
+
+https://drive.google.com/open?id=1lJgzZoHFu6HI4JBktkGY3qMk--28IUkC
+
+
 #### Sequence Model Training
 ```
 CUDA_VISIBLE_DEVICES=0 python main.py
