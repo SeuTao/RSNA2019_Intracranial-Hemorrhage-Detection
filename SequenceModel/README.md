@@ -6,7 +6,7 @@ After 2D CNN model training, we use this sequence model.
 ![image](https://github.com/SeuTao/RSNA2019_1st_place_solution/blob/master/png/s1.png)
 
 ## Sequence Model 2
-![image](https://github.com/SeuTao/RSNA2019_1st_place_solution/blob/master/png/s1.png)
+![image](https://github.com/SeuTao/RSNA2019_1st_place_solution/blob/master/png/s2.png)
 
 #### Path Setup
 Set data path to your own in ./setting.py
