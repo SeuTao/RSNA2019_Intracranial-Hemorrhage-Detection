@@ -4,11 +4,7 @@ import torch.nn.functional as F
 import torch
 import pretrainedmodels
 import math
-# from models.ibnresnextnet import *
-# from models.densenet_efficient import *
-from pytorchcv.model_provider import get_model as ptcv_get_model
 from efficientnet_pytorch import EfficientNet
-
 
 class se_resnext101_32x4d(nn.Module):
 
@@ -18,7 +14,6 @@ class se_resnext101_32x4d(nn.Module):
         self.model_ft = pretrainedmodels.__dict__['se_resnext101_32x4d'](num_classes=1000, pretrained='imagenet')
         num_ftrs = self.model_ft.last_linear.in_features
         self.model_ft.avg_pool = nn.AdaptiveAvgPool2d((1,1))
-        # nn.AdaptiveAvgPool2d((1,1))
         self.model_ft.last_linear = nn.Sequential(nn.Linear(num_ftrs, 6, bias=True))
 
     def forward(self, x):
@@ -61,19 +56,6 @@ class se_resnext50_32x4d(nn.Module):
         num_ftrs = self.model_ft.last_linear.in_features
         self.model_ft.avg_pool = nn.AdaptiveAvgPool2d((1,1))
         self.model_ft.last_linear = nn.Sequential(nn.Linear(num_ftrs, 6, bias=True))
-
-
-
-        # self.model_ft.last_linear = nn.Sequential(
-        #     nn.BatchNorm1d(2048),
-        #     # nn.Dropout(p=0.2),
-        #     # nn.Linear(2048, 1024),
-        #     # nn.ReLU(inplace=True),
-        #     # nn.BatchNorm1d(1024),
-        #     # nn.Dropout(p=0.2),
-        #     nn.Linear(2048, classCount),
-        #     # nn.Sigmoid()
-        # )
 
     def forward(self, x):
         x = self.model_ft(x)
@@ -156,11 +138,6 @@ class DenseNet121_change_avg(nn.Module):
         super(DenseNet121_change_avg, self).__init__()
         
         self.densenet121 = torchvision.models.densenet121(pretrained=True).features
-        # self.densenet121.conv0 = torch.nn.Conv2d(5, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
-        # self.densenet121[0] = nn.Sequential(nn.Conv2d(5, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False),)
-                                            # nn.BatchNorm2d(3, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True),
-                                            # nn.ReLU(inplace=True),
-                                            # self.densenet121[0])
         self.avgpool = nn.AdaptiveAvgPool2d(1)  
         self.relu = nn.ReLU()
         self.mlp = nn.Linear(1024, 6)
@@ -168,18 +145,13 @@ class DenseNet121_change_avg(nn.Module):
 
         
     def forward(self, x):
-
         x = self.densenet121(x)      
         x = self.relu(x)
         x = self.avgpool(x)
         x = x.view(-1, 1024)
-        # x = torch.cat((x, y), 1)
         x = self.mlp(x)
-        # x = self.sigmoid(x)
         
         return x
-
-
 
 class DenseNet121_change_avg_3d_features(nn.Module):
 
@@ -188,11 +160,7 @@ class DenseNet121_change_avg_3d_features(nn.Module):
         super(DenseNet121_change_avg_3d_features, self).__init__()
         
         self.densenet121 = torchvision.models.densenet121(pretrained=True).features
-        # self.densenet121.conv0 = torch.nn.Conv2d(5, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
-        # self.densenet121[0] = nn.Sequential(nn.Conv2d(5, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False),)
-                                            # nn.BatchNorm2d(3, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True),
-                                            # nn.ReLU(inplace=True),
-                                            # self.densenet121[0])
+
         self.avgpool = nn.AdaptiveAvgPool2d(1)  
         self.relu = nn.ReLU()
         self.mlp = nn.Sequential(nn.Linear(1024+512, 1024), nn.Linear(1024, 6))

@@ -1,20 +1,18 @@
 #============ Basic imports ============#e
 import os
+import sys
+sys.path.insert(0, '..')
 import time
-import pandas as pd
 import gc
+import pandas as pd
 import cv2
 import csv
 import random
 from sklearn.metrics.ranking import roc_auc_score
 from torch.utils.data import DataLoader
-# os.environ['CUDA_VISIBLE_DEVICES'] = '2'
-
 import torch
 from sklearn.metrics import log_loss
 import torch.utils.data as data
-import sys
-sys.path.insert(0, '..')  
 from src.models.models import *
 from src.dataset.dataset import *
 from src.tuils.tools import *

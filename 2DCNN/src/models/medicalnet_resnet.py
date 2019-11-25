@@ -10,7 +10,6 @@ __all__ = [
     'resnet152', 'resnet200'
 ]
 
-
 def conv3x3x3(in_planes, out_planes, stride=1, dilation=1):
     # 3x3x3 convolution with padding
     return nn.Conv3d(

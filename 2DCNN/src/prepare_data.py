@@ -2,7 +2,7 @@ import joblib
 import PIL
 from glob import glob
 import pydicom
-import numpy as np # linear algebra
+import numpy as np
 import pandas as pd
 import os
 import cv2
@@ -64,13 +64,11 @@ def prepare_image(img_path):
     metadata = get_metadata_from_dicom(img_dicom)
     img = window_image(img_dicom.pixel_array, **metadata)
     img = normalize_minmax(img) * 255
-#     img_pil = resize(img, 512, 512)
     img = PIL.Image.fromarray(img.astype(np.int8), mode="L")
     return img_id, img
 
 def prepare_and_save(img_path, subfolder):
     try:
-#         l.error("loading eso")
         img_id, img_pil = prepare_image(img_path)
         save_img(img_pil, subfolder, img_id)
     except KeyboardInterrupt:
@@ -89,8 +87,6 @@ def prepare_images_njobs(img_paths, subfolder, n_jobs=-1):
 
 
 if __name__ == '__main__':
-
-
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("-dcm_path", "--dcm_path", type=str)
     parser.add_argument("-png_path", "--png_path", type=str)
@@ -99,6 +95,8 @@ if __name__ == '__main__':
 
     dcm_path = args.dcm_path
     png_path = args.png_path
+
     if not os.path.exists(png_path):
         os.makedirs(png_path)
+
     prepare_images_njobs(glob(dcm_path+'/*'), png_path+'/')
