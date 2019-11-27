@@ -1,5 +1,3 @@
-#============ Basic imports ============#e
-
 import os
 import time
 import pandas as pd
@@ -8,8 +6,6 @@ import cv2
 import csv
 import random
 from sklearn.metrics.ranking import roc_auc_score
-# os.environ['CUDA_VISIBLE_DEVICES'] = '2,3'
-#============ PyTorch imports ============#
 import torch
 import torch.nn as nn
 import torch.nn.parallel
@@ -38,16 +34,11 @@ import sklearn
 import copy
 from efficientnet_pytorch import EfficientNet
 from efficientnet_pytorch.utils import *
-import segmentation_models_pytorch as smp
 from segmentation_models_pytorch.unet.decoder import UnetDecoder
-# ImageFile.LOAD_TRUNCATED_IMAGES = True
 torch.backends.cudnn.benchmark = True
 import argparse
-import apex
-from apex import amp
 
 def epochVal(num_fold, model, dataLoader, loss_cls, c_val, val_batch_size):
-
     model.eval ()
     lossValNorm = 0
     valLoss = 0
@@ -75,13 +66,11 @@ def epochVal(num_fold, model, dataLoader, loss_cls, c_val, val_batch_size):
 
     valLoss = valLoss / lossValNorm
 
-    st = time.time()
     auc = computeAUROC(outGT, outPRED, 6)
     auc = [round(x, 4) for x in auc]
     loss_list, loss_sum = weighted_log_loss(outPRED, outGT)
 
     return valLoss, auc, loss_list, loss_sum
-
 
 def train_one_model(model_name, image_size):
 
@@ -99,11 +88,7 @@ def train_one_model(model_name, image_size):
 
     for num_fold in range(5):
         print(num_fold)
-        # if num_fold in [0,1,2]:
-        #    continue
-
         with open(snapshot_path + '/log.csv', 'a', newline='') as f:
-
             writer = csv.writer(f)
             writer.writerow([num_fold]) 
 
@@ -118,6 +103,7 @@ def train_one_model(model_name, image_size):
 
         c_train = c_train[0:100]
         c_val = c_val[0:4000]
+
         print('train dataset:', len(c_train), '  val dataset:', len(c_val))
         with open(snapshot_path + '/log.csv', 'a', newline='') as f:
             writer = csv.writer(f)
@@ -125,33 +111,17 @@ def train_one_model(model_name, image_size):
             writer.writerow(['train_batch_size:', train_batch_size, 'val_batch_size:', val_batch_size])  
 
         train_transform, val_transform = generate_transforms(image_size)
-        train_loader, val_loader = generate_dataset_loader_cls_seg(df_all, c_train, train_transform, train_batch_size, c_val, val_transform, val_batch_size, workers)
+        train_loader, val_loader = generate_dataset_loader(df_all, c_train, train_transform, train_batch_size, c_val, val_transform, val_batch_size, workers)
 
         model = eval(model_name+'()')
-
-        # state = torch.load('/data/lanjun/kaggle_rsna2019/models_snapshot/DenseNet169_change_avg_test_context_256/model_epoch_59_'+str(num_fold)+'.pth')['state_dict']
-        # new_state_dict = OrderedDict()
-        # for k, v in state.items():
-        #     name = k[7:]
-        #     new_state_dict[name] = v
-        # model.load_state_dict(new_state_dict)
-        model = apex.parallel.convert_syncbn_model(model).cuda()
+        # model = apex.parallel.convert_syncbn_model(model).cuda()
+        model = model.cuda()
 
         optimizer = torch.optim.Adam(model.parameters(), lr=0.0005, betas=(0.9, 0.999), eps=1e-08, weight_decay=0.00002)
         scheduler = WarmRestart(optimizer, T_max=5, T_mult=1, eta_min=1e-5)
-        model, optimizer = amp.initialize(model, optimizer, opt_level="O1")
-        model = torch.nn.DataParallel(model)        
-
-        def loss_cls_com(input, target):
-            loss_1 = FocalLoss()
-            loss_2 = torch.nn.BCEWithLogitsLoss()
-
-            loss = loss_1(input, target) + loss_2(input, target)
-
-            return loss
-
+        # model, optimizer = amp.initialize(model, optimizer, opt_level="O1")
+        model = torch.nn.DataParallel(model)
         loss_cls = torch.nn.BCEWithLogitsLoss(pos_weight = torch.FloatTensor([1.0, 1.0, 1.0, 1.0, 1.0, 1.0]).cuda())
-
         trMaxEpoch = 1
 
         for epochID in range (0, trMaxEpoch):
@@ -183,8 +153,8 @@ def train_one_model(model_name, image_size):
                 trainLoss = trainLoss + lossvalue.item()
                 lossTrainNorm = lossTrainNorm + 1
                 optimizer.zero_grad()
-                with amp.scale_loss(lossvalue, optimizer) as scaled_loss:
-                    scaled_loss.backward()
+                # with amp.scale_loss(lossvalue, optimizer) as scaled_loss:
+                #     scaled_loss.backward()
                 torch.nn.utils.clip_grad_norm_(model.parameters(), 0.5)
                 optimizer.step()  
 
@@ -215,8 +185,10 @@ def train_one_model(model_name, image_size):
         del model    
 
 if __name__ == '__main__':
-    csv_path = '../data/stage1_train_cls.csv'
 
+    os.environ['CUDA_VISIBLE_DEVICES'] = '2,3'
+
+    csv_path = '../data/stage1_train_cls.csv'
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("-backbone", "--backbone", type=str, default='DenseNet169_change_avg', help='backbone')
     parser.add_argument("-img_size", "--Image_size", type=int, default=256, help='image_size')

@@ -62,7 +62,6 @@ class RSNA_Dataset_train_by_study_context(data.Dataset):
         
         study_name = self.name_list[idx % len(self.name_list)]
         study_train_df = self.df[self.df['study_instance_uid']==study_name]
-        # study_index = random.randrange(2, study_train_df.shape[0]-2)
         study_index = random.choice(generate_random_list(study_train_df.shape[0]-1))
 
         slice_id = study_name + '_' + str(study_index)
@@ -84,12 +83,13 @@ class RSNA_Dataset_train_by_study_context(data.Dataset):
         image_up = cv2.resize(image_up, (512, 512))
         image_down = cv2.imread('/home1/kaggle_rsna2019/process/train/' + filename_down, 0)
         image_down = cv2.resize(image_down, (512, 512))
+
         image_cat = np.concatenate([image_up[:,:,np.newaxis], image[:,:,np.newaxis], image_down[:,:,np.newaxis]],2)
         label = torch.FloatTensor(study_train_df[study_train_df['filename']==filename].loc[:, 'any':'subdural'].values)
+
         if random.random() < 0.5:
             image_cat = cv2.cvtColor(image_cat, cv2.COLOR_BGR2RGB)
-        else:
-            image_cat
+
         image_cat = aug_image(image_cat, is_infer=False)
         
         if self.transform is not None:
@@ -98,10 +98,8 @@ class RSNA_Dataset_train_by_study_context(data.Dataset):
 
         return image_cat, label
 
-
     def __len__(self):
         return len(self.name_list) * 4
-
 
 
 class RSNA_Dataset_val_by_study_context(data.Dataset):
@@ -142,6 +140,7 @@ class RSNA_Dataset_val_by_study_context(data.Dataset):
         image_cat = np.concatenate([image_up[:,:,np.newaxis], image[:,:,np.newaxis], image_down[:,:,np.newaxis]],2)
         label = torch.FloatTensor(study_train_df[study_train_df['filename']==filename].loc[:, 'any':'subdural'].values)
         image_cat = aug_image(image_cat, is_infer=True)
+
         if self.transform is not None:
             augmented = self.transform(image=image_cat)
             image_cat = augmented['image'].transpose(2, 0, 1)
@@ -152,70 +151,10 @@ class RSNA_Dataset_val_by_study_context(data.Dataset):
     def __len__(self):
         return len(self.name_list)
 
-from imgaug import augmenters as iaa
 import cv2
 import numpy as np
 import random
 import math
-#===================================================paug===============================================================
-def order_points(pts):
-    # initialzie a list of coordinates that will be ordered
-    # such that the first entry in the list is the top-left,
-    # the second entry is the top-right, the third is the
-    # bottom-right, and the fourth is the bottom-left
-    rect = np.zeros((4, 2), dtype="float32")
-    # the top-left point will have the smallest sum, whereas
-    # the bottom-right point will have the largest sum
-    s = pts.sum(axis=1)
-    rect[0] = pts[np.argmin(s)]
-    rect[2] = pts[np.argmax(s)]
-    # now, compute the difference between the points, the
-    # top-right point will have the smallest difference,
-    # whereas the bottom-left will have the largest difference
-    diff = np.diff(pts, axis=1)
-    rect[1] = pts[np.argmin(diff)]
-    rect[3] = pts[np.argmax(diff)]
-    # return the ordered coordinates
-    return rect
-
-def four_point_transform(image, pts):
-    # obtain a consistent order of the points and unpack them
-    # individually
-    rect = order_points(pts)
-    original = np.array([[0, 0],
-                         [image.shape[1] - 1, 0],
-                         [image.shape[1] - 1, image.shape[0] - 1],
-                         [0, image.shape[0] - 1]], dtype="float32")
-
-    M = cv2.getPerspectiveTransform(original, rect)
-    warped = cv2.warpPerspective(image, M, (image.shape[1], image.shape[0]))
-    return warped
-
-def Perspective_aug(img, threshold1 = 0.25, threshold2 = 0.75):
-    # img = cv2.imread(img_name)
-    rows, cols, ch = img.shape
-
-    x0,y0 = random.randint(0, int(cols * threshold1)), random.randint(0, int(rows * threshold1))
-    x1,y1 = random.randint(int(cols * threshold2), cols - 1), random.randint(0, int(rows * threshold1))
-    x2,y2 = random.randint(int(cols * threshold2), cols - 1), random.randint(int(rows * threshold2), rows - 1)
-    x3,y3 = random.randint(0, int(cols * threshold1)), random.randint(int(rows * threshold2), rows - 1)
-    pts = np.float32([(x0,y0),
-                      (x1,y1),
-                      (x2,y2),
-                      (x3,y3)])
-
-    warped = four_point_transform(img, pts)
-
-    x_ = np.asarray([x0, x1, x2, x3])
-    y_ = np.asarray([y0, y1, y2, y3])
-
-    min_x = np.min(x_)
-    max_x = np.max(x_)
-    min_y = np.min(y_)
-    max_y = np.max(y_)
-
-    warped = warped[min_y:max_y,min_x:max_x,:]
-    return warped
 
 
 def randomHorizontalFlip(image, u=0.5):
@@ -346,7 +285,6 @@ def randomShiftScaleRotate(image,
 
 
 def aug_image(image, is_infer=False, augment = None):
-
     if is_infer:
         # return image
         image = randomHorizontalFlip(image, u=0)
@@ -356,9 +294,6 @@ def aug_image(image, is_infer=False, augment = None):
 
     else:
         image = randomHorizontalFlip(image)
-        # image = randomVerticleFlip(image)
-        # image = randomRotate90(image)
-
         height, width, _ = image.shape
         image = randomShiftScaleRotate(image,
                                        shift_limit=(-0.1, 0.1),
@@ -369,77 +304,13 @@ def aug_image(image, is_infer=False, augment = None):
         image = cv2.resize(image, (width, height))
         image = random_erasing(image, probability=0.5, sl=0.02, sh=0.4, r1=0.3)
 
-        # ShenTao
         ratio = random.uniform(0.6,0.99)
         image = random_cropping(image, ratio=ratio, is_random=True)
 
         return image
 
 
-
-class RSNA_Dataset_train_by_study_context_2(data.Dataset):
-    def __init__(self,
-                 df = None,
-                 name_list = None,
-                 transform = None
-                 ):
-        self.df = df
-        self.name_list = name_list
-        self.transform = transform
-
-    def __getitem__(self, idx):
-        
-        study_name = self.name_list[idx % len(self.name_list)]
-        study_train_df = self.df[self.df['study_instance_uid']==study_name]
-        study_index = random.choice(generate_random_list(study_train_df.shape[0]-1))
-
-        slice_id = study_name + '_' + str(study_index)
-        filename = study_train_df[study_train_df['slice_id']==slice_id]['filename'].values[0]
-        image_cat = cv2.imread('/home1/kaggle_rsna2019/process/train_concat_3images/' + filename)
-        if random.random() < 0.5:
-            image_cat = cv2.cvtColor(image_cat, cv2.COLOR_BGR2RGB)
-        else:
-            image_cat
-        label = torch.FloatTensor(study_train_df[study_train_df['filename']==filename].loc[:, 'any':'subdural'].values)
-        image_cat = aug_image(image_cat, is_infer=False)
-        if self.transform is not None:
-            augmented = self.transform(image=image_cat)
-            image_cat = augmented['image'].transpose(2, 0, 1)
-
-        return image_cat, label
-
-
-    def __len__(self):
-        return len(self.name_list) * 4
-
-class RSNA_Dataset_val_by_study_context_2(data.Dataset):
-    def __init__(self,
-                 df = None,
-                 name_list = None,
-                 transform = None
-                 ):
-        self.df = df[df['filename'].isin(name_list)]
-        self.name_list = name_list
-        self.transform = transform
-
-    def __getitem__(self, idx):
-        
-        filename = self.name_list[idx % len(self.name_list)]
-        image_cat = cv2.imread('/home1/kaggle_rsna2019/process/train_concat_3images/' + filename)
-        label = torch.FloatTensor(self.df[self.df['filename']==filename].loc[:, 'any':'subdural'].values)
-        image_cat = aug_image(image_cat, is_infer=True)
-        if self.transform is not None:
-            augmented = self.transform(image=image_cat)
-            image_cat = augmented['image'].transpose(2, 0, 1)
-
-        return image_cat, label
-
-
-    def __len__(self):
-        return len(self.name_list)
-
-
-def generate_dataset_loader_cls_seg(df_all, c_train, train_transform, train_batch_size, c_val, val_transform, val_batch_size, workers):
+def generate_dataset_loader(df_all, c_train, train_transform, train_batch_size, c_val, val_transform, val_batch_size, workers):
 
     train_dataset = RSNA_Dataset_train_by_study_context(df_all, c_train, train_transform)
     val_dataset = RSNA_Dataset_val_by_study_context(df_all, c_val, val_transform)

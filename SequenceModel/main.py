@@ -41,7 +41,7 @@ class SequenceModel(nn.Module):
     def __init__(self, model_num):
         super(SequenceModel, self).__init__()
 
-        # version1
+        # seq model 1
         self.fea_conv = nn.Sequential(nn.Dropout2d(drop_out),
                                       nn.Conv2d(feature_dim, 512, kernel_size=(1, 1), stride=(1,1),padding=(0,0), bias=False),
                                       nn.BatchNorm2d(512),
@@ -66,6 +66,7 @@ class SequenceModel(nn.Module):
         else:
             model_num += 1
 
+        # seq model 2
         self.conv_first = nn.Sequential(nn.Conv2d(model_num, 128*ratio, kernel_size=(5, 1), stride=(1,1),padding=(2,0),dilation=1, bias=False),
                                         nn.BatchNorm2d(128*ratio),
                                         nn.ReLU(),

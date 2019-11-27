@@ -13,9 +13,9 @@ from torch.utils.data import DataLoader
 import torch
 from sklearn.metrics import log_loss
 import torch.utils.data as data
-from src.models.models import *
-from src.dataset.dataset import *
-from src.tuils.tools import *
+from models.models import *
+from dataset.dataset import *
+from tuils.tools import *
 from tqdm import tqdm
 from sklearn.metrics import f1_score
 import torch.nn as nn
@@ -26,66 +26,6 @@ import numpy as np
 import random
 import math
 import argparse
-#===================================================paug===============================================================
-def order_points(pts):
-    # initialzie a list of coordinates that will be ordered
-    # such that the first entry in the list is the top-left,
-    # the second entry is the top-right, the third is the
-    # bottom-right, and the fourth is the bottom-left
-    rect = np.zeros((4, 2), dtype="float32")
-    # the top-left point will have the smallest sum, whereas
-    # the bottom-right point will have the largest sum
-    s = pts.sum(axis=1)
-    rect[0] = pts[np.argmin(s)]
-    rect[2] = pts[np.argmax(s)]
-    # now, compute the difference between the points, the
-    # top-right point will have the smallest difference,
-    # whereas the bottom-left will have the largest difference
-    diff = np.diff(pts, axis=1)
-    rect[1] = pts[np.argmin(diff)]
-    rect[3] = pts[np.argmax(diff)]
-    # return the ordered coordinates
-    return rect
-
-def four_point_transform(image, pts):
-    # obtain a consistent order of the points and unpack them
-    # individually
-    rect = order_points(pts)
-    original = np.array([[0, 0],
-                         [image.shape[1] - 1, 0],
-                         [image.shape[1] - 1, image.shape[0] - 1],
-                         [0, image.shape[0] - 1]], dtype="float32")
-
-    M = cv2.getPerspectiveTransform(original, rect)
-    warped = cv2.warpPerspective(image, M, (image.shape[1], image.shape[0]))
-    return warped
-
-def Perspective_aug(img, threshold1 = 0.25, threshold2 = 0.75):
-    # img = cv2.imread(img_name)
-    rows, cols, ch = img.shape
-
-    x0,y0 = random.randint(0, int(cols * threshold1)), random.randint(0, int(rows * threshold1))
-    x1,y1 = random.randint(int(cols * threshold2), cols - 1), random.randint(0, int(rows * threshold1))
-    x2,y2 = random.randint(int(cols * threshold2), cols - 1), random.randint(int(rows * threshold2), rows - 1)
-    x3,y3 = random.randint(0, int(cols * threshold1)), random.randint(int(rows * threshold2), rows - 1)
-    pts = np.float32([(x0,y0),
-                      (x1,y1),
-                      (x2,y2),
-                      (x3,y3)])
-
-    warped = four_point_transform(img, pts)
-
-    x_ = np.asarray([x0, x1, x2, x3])
-    y_ = np.asarray([y0, y1, y2, y3])
-
-    min_x = np.min(x_)
-    max_x = np.max(x_)
-    min_y = np.min(y_)
-    max_y = np.max(y_)
-
-    warped = warped[min_y:max_y,min_x:max_x,:]
-    return warped
-
 
 def randomHorizontalFlip(image, u=0.5):
     if np.random.random() < u:
@@ -102,7 +42,6 @@ def randomRotate90(image, u=0.5):
         image[:,:,0:3] = np.rot90(image[:,:,0:3])
     return image
 
-#===================================================origin=============================================================
 def random_cropping(image, ratio=0.8, is_random = True):
     height, width, _ = image.shape
     target_h = int(height*ratio)
@@ -225,9 +164,6 @@ def aug_image(image, is_infer=False, augment = [0,0]):
 
     else:
         image = randomHorizontalFlip(image)
-        # image = randomVerticleFlip(image)
-        # image = randomRotate90(image)
-
         height, width, _ = image.shape
         image = randomShiftScaleRotate(image,
                                        shift_limit=(-0.1, 0.1),
@@ -238,7 +174,6 @@ def aug_image(image, is_infer=False, augment = [0,0]):
         image = cv2.resize(image, (width, height))
         image = random_erasing(image, probability=0.5, sl=0.02, sh=0.4, r1=0.3)
 
-        # ShenTao
         ratio = random.uniform(0.6,0.99)
         image = random_cropping(image, ratio=ratio, is_random=True)
 
@@ -277,6 +212,7 @@ class PredictionDatasetPure:
             image_cat = cv2.imread('/home1/kaggle_rsna2019/process/stage2_test_concat_3images/' + filename)
             image_cat = cv2.resize(image_cat, (256, 256))
             label = torch.FloatTensor([0,0,0,0,0,0])
+
         image_cat = aug_image(image_cat, is_infer=True)
         image_cat = valid_transform_pure(image=image_cat)['image'].transpose(2, 0, 1)
         
@@ -433,12 +369,10 @@ def group_aug(val_p_aug, val_names_aug, val_truth_aug):
 def predict_all(model_name, image_size):
 
     valid_transform_aug = albumentations.Compose([
-        # albumentations.Resize(image_size, image_size),
         albumentations.Normalize(mean=(0.456, 0.456, 0.456), std=(0.224, 0.224, 0.224), max_pixel_value=255.0, p=1.0)
     ])
 
     valid_transform_pure = albumentations.Compose([
-        # albumentations.Resize(image_size, image_size),
         albumentations.Normalize(mean=(0.456, 0.456, 0.456), std=(0.224, 0.224, 0.224), max_pixel_value=255.0, p=1.0)
     ])
 
@@ -461,8 +395,6 @@ def predict_all(model_name, image_size):
         c_val = f_val.readlines()
         f_val.close()
         c_val = [s.replace('\n', '') for s in c_val]
-
-        # c_val = c_val[0:9000]
             
         model = eval(model_name+'()')
         model = nn.DataParallel(model).cuda()
@@ -485,15 +417,6 @@ def predict_all(model_name, image_size):
             df = pd.DataFrame(data=val_predictions,  columns=['any', 'epidural', 'intraparenchymal', 'intraventricular', 'subarachnoid', 'subdural'])
             df['filename'] = val_image_names
             df.to_csv(prediction_path + '_val_center.csv')
-
-            # test_p, test_names, test_truth = predict(model, c_test, df_all, df_test, batch_size, 1, False, 'test', fold)
-            # test_predictions, test_image_names, test_truth = group_aug(test_p, test_names, test_truth)
-
-            # df = pd.DataFrame(data=test_predictions,  columns=['any', 'epidural', 'intraparenchymal', 'intraventricular', 'subarachnoid', 'subdural'])
-            # df['filename'] = test_image_names
-            # df.to_csv(prediction_path + '_test_center.csv')
-            
-
 
         if is_aug:
             val_p_aug, val_names_aug, val_truth_aug = predict(model, c_val, df_all, df_test, batch_size, num_aug, True, 'val', fold)
@@ -602,10 +525,8 @@ if __name__ == '__main__':
     kfold_path = '../data/fold_5_by_study_image/'
     test_csv_path = '/data/raw_data_repository/kaggle/kaggle_rsna2019/stage2_test_cls.csv'
     df_test = pd.read_csv(test_csv_path)  
-    c_test = list(set(df_test['filename'].values.tolist()))  
-    # c_test = c_test[0:400]
+    c_test = list(set(df_test['filename'].values.tolist()))
     df_all = pd.read_csv(csv_path)
-    # prediction_path = snapshot_path+'/prediction/'
     is_center = False
     is_aug = True
     num_aug = 10
@@ -613,7 +534,6 @@ if __name__ == '__main__':
 
     backbone = args.backbone
     print(backbone)
-    # snapshot_path = '/data/VPS/VPS_04/kaggle/kaggle_siim/models_snapshot/seg/' + backbone + '_'
     predict_all(backbone, Image_size)
 
 
