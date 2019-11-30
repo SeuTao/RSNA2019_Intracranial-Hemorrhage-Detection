@@ -86,16 +86,12 @@ def prepare_images_njobs(img_paths, subfolder, n_jobs=-1):
     joblib.Parallel(n_jobs=n_jobs)(joblib.delayed(prepare_and_save)(i, subfolder) for i in tqdm(img_paths))
 
 if __name__ == '__main__':
-    # parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    # parser.add_argument("-dcm_path", "--dcm_path", type=str)
-    # parser.add_argument("-png_path", "--png_path", type=str)
-    # args = parser.parse_args()
-    #
-    # dcm_path = args.dcm_path
-    # png_path = args.png_path
-
-    dcm_path = r'/mnt/group-ai-medical/private/scusenyang/rsna_stage2/stage_2_test_images'
-    png_path = r'/mnt/group-ai-medical/private/senyang/data_tencent/kaggle_RSNA/RSNA_PNG/YL_stage_2_test_images'
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument("-dcm_path", "--dcm_path", type=str)
+    parser.add_argument("-png_path", "--png_path", type=str)
+    args = parser.parse_args()
+    dcm_path = args.dcm_path
+    png_path = args.png_path
 
     if not os.path.exists(png_path):
         os.makedirs(png_path)
