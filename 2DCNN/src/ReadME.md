@@ -3,6 +3,9 @@
 ## Preprocessing
 ![image](https://github.com/SeuTao/RSNA2019_1st_place_solution/blob/master/png/preprocessing.png)
 
+Prepare csv file:
+
+download data.zip:  https://drive.google.com/open?id=1buISR_b3HQDU4KeNc_DmvKTYJ1gvj5-3
 
 
 1. convert dcm to png
