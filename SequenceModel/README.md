@@ -7,13 +7,12 @@
 ![image](https://github.com/SeuTao/RSNA2019_1st_place_solution/blob/master/png/s2.png)
 
 #### Path Setup
-Set data path to your own in ./setting.py
+Set data path in ./setting.py
 
-#### download
-https://drive.google.com/open?id=1qYi4k-DuOLJmyZ7uYYrnomU2U7MrYRBV
+#### download 
+csv.zip: https://drive.google.com/open?id=1qYi4k-DuOLJmyZ7uYYrnomU2U7MrYRBV
 
-https://drive.google.com/open?id=1lJgzZoHFu6HI4JBktkGY3qMk--28IUkC
-
+feature samples: https://drive.google.com/open?id=1lJgzZoHFu6HI4JBktkGY3qMk--28IUkC
 
 #### Sequence Model Training
 ```
