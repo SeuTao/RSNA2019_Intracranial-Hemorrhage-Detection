@@ -1,19 +1,13 @@
-from torchvision import transforms
-import torchvision.datasets as datasets
-from PIL import Image
+from torch.utils.data.dataloader import default_collate
 import torch.utils.data as data
 import torch
-import numpy as np
-import cv2
-from tqdm import tqdm
-import random
 import albumentations
-
-from torch.utils.data.dataloader import default_collate
-import torch.utils.data.sampler as torchSampler
-import pandas as pd
-from torch.utils.data.sampler import Sampler
+import cv2
+import numpy as np
+import random
 import math
+
+from settings import train_png_dir
 
 def generate_transforms(image_size):
     # MAX_SIZE = 448
@@ -59,13 +53,13 @@ class RSNA_Dataset_train_by_study_context(data.Dataset):
         self.transform = transform
 
     def __getitem__(self, idx):
-        
         study_name = self.name_list[idx % len(self.name_list)]
         study_train_df = self.df[self.df['study_instance_uid']==study_name]
         study_index = random.choice(generate_random_list(study_train_df.shape[0]-1))
 
         slice_id = study_name + '_' + str(study_index)
         filename = study_train_df[study_train_df['slice_id']==slice_id]['filename'].values[0]
+
         if study_index == (study_train_df.shape[0]-1):
             filename_up = filename
         else:
@@ -77,11 +71,12 @@ class RSNA_Dataset_train_by_study_context(data.Dataset):
             slice_id_down = study_name + '_' + str(study_index-1)
             filename_down = study_train_df[study_train_df['slice_id']==slice_id_down]['filename'].values[0]
 
-        image = cv2.imread('/home1/kaggle_rsna2019/process/train/' + filename, 0)
+        # print(train_png_dir + filename)
+        image = cv2.imread(train_png_dir + filename, 0)
         image = cv2.resize(image, (512, 512))
-        image_up = cv2.imread('/home1/kaggle_rsna2019/process/train/' + filename_up, 0)
+        image_up = cv2.imread(train_png_dir + filename_up, 0)
         image_up = cv2.resize(image_up, (512, 512))
-        image_down = cv2.imread('/home1/kaggle_rsna2019/process/train/' + filename_down, 0)
+        image_down = cv2.imread(train_png_dir + filename_down, 0)
         image_down = cv2.resize(image_down, (512, 512))
 
         image_cat = np.concatenate([image_up[:,:,np.newaxis], image[:,:,np.newaxis], image_down[:,:,np.newaxis]],2)
@@ -131,11 +126,11 @@ class RSNA_Dataset_val_by_study_context(data.Dataset):
             slice_id_down = study_name + '_' + str(study_index-1)
             filename_down = study_train_df[study_train_df['slice_id']==slice_id_down]['filename'].values[0]
 
-        image = cv2.imread('/home1/kaggle_rsna2019/process/train/' + filename, 0)
+        image = cv2.imread(train_png_dir + filename, 0)
         image = cv2.resize(image, (512, 512))
-        image_up = cv2.imread('/home1/kaggle_rsna2019/process/train/' + filename_up, 0)
+        image_up = cv2.imread(train_png_dir + filename_up, 0)
         image_up = cv2.resize(image_up, (512, 512))
-        image_down = cv2.imread('/home1/kaggle_rsna2019/process/train/' + filename_down, 0)
+        image_down = cv2.imread(train_png_dir + filename_down, 0)
         image_down = cv2.resize(image_down, (512, 512))
         image_cat = np.concatenate([image_up[:,:,np.newaxis], image[:,:,np.newaxis], image_down[:,:,np.newaxis]],2)
         label = torch.FloatTensor(study_train_df[study_train_df['filename']==filename].loc[:, 'any':'subdural'].values)
@@ -151,10 +146,6 @@ class RSNA_Dataset_val_by_study_context(data.Dataset):
     def __len__(self):
         return len(self.name_list)
 
-import cv2
-import numpy as np
-import random
-import math
 
 
 def randomHorizontalFlip(image, u=0.5):

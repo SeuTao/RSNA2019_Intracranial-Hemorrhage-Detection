@@ -19,7 +19,6 @@ import pydicom
 import argparse
 
 if __name__ == '__main__':
-
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("-root_path", "--root_path", type=str)
     parser.add_argument("-train_dcm_path", "--train_dcm_path", type=str)
@@ -27,10 +26,15 @@ if __name__ == '__main__':
     parser.add_argument("-save_path", "--save_path", type=str)
 
     args = parser.parse_args()
-    ROOT_DIR = args.root_path
+    # ROOT_DIR = args.root_path
+    # train_dcm_path = args.train_dcm_path
+    # test_dcm_path = args.test_dcm_path
+    # save_path = args.save_path
+
+    ROOT_DIR = r'/mnt/group-ai-medical/private/senyang/data_tencent/kaggle_RSNA/'
     train_dcm_path = args.train_dcm_path
-    test_dcm_path = args.test_dcm_path
-    save_path = args.save_path
+    test_dcm_path = r'/mnt/group-ai-medical/private/scusenyang/rsna_stage2/stage_2_test_images/'
+    save_path = r'../data/'
 
     sub_df = pd.read_csv(ROOT_DIR + 'stage_2_sample_submission.csv')
 

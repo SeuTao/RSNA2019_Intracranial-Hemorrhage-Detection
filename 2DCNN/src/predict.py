@@ -500,6 +500,7 @@ def predict_all(model_name, image_size):
     
 if __name__ == '__main__':
     csv_path = '../data/stage1_train_cls.csv'
+    test_csv_path = '../data/stage2_test_cls.csv'
 
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("-backbone", "--backbone", type=str, default='DenseNet121_change_avg', help='backbone')
@@ -523,7 +524,7 @@ if __name__ == '__main__':
 
     model_snapshot_path = args.snapshot_path.replace('\n', '').replace('\r', '') + '/'
     kfold_path = '../data/fold_5_by_study_image/'
-    test_csv_path = '/data/raw_data_repository/kaggle/kaggle_rsna2019/stage2_test_cls.csv'
+
     df_test = pd.read_csv(test_csv_path)  
     c_test = list(set(df_test['filename'].values.tolist()))
     df_all = pd.read_csv(csv_path)

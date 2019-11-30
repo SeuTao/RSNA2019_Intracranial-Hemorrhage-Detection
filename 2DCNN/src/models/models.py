@@ -98,22 +98,18 @@ class DenseNet201_change_avg(nn.Module):
         self.sigmoid = nn.Sigmoid()   
 
     def forward(self, x):
-
         x = self.densenet201(x)      
         x = self.relu(x)
         x = self.avgpool(x)
         x = x.view(x.size(0), -1)
         x = self.mlp(x)
-        # x = self.sigmoid(x)
-        
+
         return x
 
 class DenseNet169_change_avg(nn.Module):
 
     def __init__(self):
-    
         super(DenseNet169_change_avg, self).__init__()
-        
         self.densenet169 = torchvision.models.densenet169(pretrained=True).features
         self.avgpool = nn.AdaptiveAvgPool2d(1)  
         self.relu = nn.ReLU()
@@ -121,7 +117,6 @@ class DenseNet169_change_avg(nn.Module):
         self.sigmoid = nn.Sigmoid()   
 
     def forward(self, x):
-
         x = self.densenet169(x)      
         x = self.relu(x)
         x = self.avgpool(x)
@@ -175,7 +170,6 @@ class DenseNet121_change_avg_3d_features(nn.Module):
         x = x.view(-1, 1024)
         x = torch.cat((x, y), 1)
         x = self.mlp(x)
-        # x = self.sigmoid(x)
         
         return x
 
