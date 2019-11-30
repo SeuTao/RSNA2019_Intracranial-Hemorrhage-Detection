@@ -1,6 +1,7 @@
 # RSNA Intracranial Hemorrhage Detection
-This is the source code for the first place solution to the [RSNA2019 Intracranial Hemorrhage Detection Challenge](https://www.kaggle.com/c/rsna-intracranial-hemorrhage-detection). 
-Video with quick overview: 
+This is the source code for the first place solution to the [RSNA2019 Intracranial Hemorrhage Detection Challenge](https://www.kaggle.com/c/rsna-intracranial-hemorrhage-detection).
+
+Solution write up: [Link](https://www.kaggle.com/c/rsna-intracranial-hemorrhage-detection/discussion/117210#latest-682640).
 
 ## Solutuoin Overview
 ![image](https://github.com/SeuTao/RSNA2019_1st_place_solution/blob/master/png/overview.png)
@@ -13,7 +14,7 @@ Video with quick overview:
 - torch==1.1.0
 - torchvision==0.2.1
 
-### code
+### CODE
 - 2DCNN
 - SequenceModel
 
@@ -86,3 +87,8 @@ The final submissions are in the folder ../FinalSubmission/version2/submission_t
 ## Final Submission
 ### Private Leaderboard:
 - 0.04383
+
+### TODO
+- [ ] Pre-trained models
+- [ ] 2DCNN + SeqModel end-to-end training 
+- [ ] 3DCNN training
