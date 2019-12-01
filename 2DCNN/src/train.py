@@ -100,8 +100,8 @@ def train(model_name, image_size):
         c_val = [s.replace('\n', '') for s in c_val]     
 
         # for debug
-        c_train = c_train[0:1000]
-        c_val = c_val[0:4000]
+        # c_train = c_train[0:1000]
+        # c_val = c_val[0:4000]
 
         print('train dataset study num:', len(c_train), '  val dataset image num:', len(c_val))
         with open(snapshot_path + '/log.csv', 'a', newline='') as f:
@@ -184,7 +184,7 @@ def train(model_name, image_size):
         del model    
 
 if __name__ == '__main__':
-    os.environ['CUDA_VISIBLE_DEVICES'] = '6,7'
+    # os.environ['CUDA_VISIBLE_DEVICES'] = '6,7'
 
     csv_path = '../data/stage1_train_cls.csv'
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
