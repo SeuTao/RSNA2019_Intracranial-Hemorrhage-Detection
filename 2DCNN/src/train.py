@@ -43,7 +43,6 @@ def epochVal(model, dataLoader, loss_cls, c_val, val_batch_size):
 
     outGT = torch.FloatTensor().cuda()
     outPRED = torch.FloatTensor().cuda()
-
     for i, (input, target) in enumerate (dataLoader):
         if i == 0:
             ss_time = time.time()
@@ -181,17 +180,83 @@ def train(model_name, image_size):
                 writer = csv.writer(f)
                 writer.writerow(result)  
 
-        del model    
+        del model
+
+def valid_snapshot(model_name, image_size):
+    dir = r'./DenseNet121_change_avg_256'
+    if not os.path.exists(snapshot_path):
+        os.makedirs(snapshot_path)
+    header = ['Epoch', 'Learning rate', 'Time', 'Train Loss', 'Val Loss']
+
+    if not os.path.isfile(snapshot_path + '/log.csv'):
+        with open(snapshot_path + '/log.csv', 'a', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow(header)
+    df_all = pd.read_csv(csv_path)
+
+    kfold_path_val = '../data/fold_5_by_study_image/'
+    loss_cls = torch.nn.BCEWithLogitsLoss(pos_weight=torch.FloatTensor([1.0, 1.0, 1.0, 1.0, 1.0, 1.0]).cuda())
+    for num_fold in range(5):
+        print('fold_num:', num_fold)
+
+        ckpt = r'model_epoch_best_'+str(num_fold)+'.pth'
+        ckpt = os.path.join(dir,ckpt)
+
+        with open(snapshot_path + '/log.csv', 'a', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow([num_fold])
+
+        f_val = open(kfold_path_val + 'fold' + str(num_fold) + '/val.txt', 'r')
+        c_val = f_val.readlines()
+        f_val.close()
+        c_val = [s.replace('\n', '') for s in c_val]
+
+        print('  val dataset image num:', len(c_val))
+
+        val_transform = albumentations.Compose([
+            albumentations.Resize(image_size, image_size),
+            albumentations.Normalize(mean=(0.456, 0.456, 0.456), std=(0.224, 0.224, 0.224), max_pixel_value=255.0,
+                                     p=1.0)
+        ])
+
+        val_dataset = RSNA_Dataset_val_by_study_context(df_all, c_val, val_transform)
+
+        val_loader = torch.utils.data.DataLoader(
+            val_dataset,
+            batch_size=val_batch_size,
+            shuffle=False,
+            num_workers=workers,
+            pin_memory=True,
+            drop_last=False)
+
+        model = eval(model_name + '()')
+        model = model.cuda()
+        model = torch.nn.DataParallel(model)
+
+        if ckpt is not None:
+            print(ckpt)
+            model.load_state_dict(torch.load(ckpt, map_location=lambda storage, loc: storage)["state_dict"])
+
+        valLoss, auc, loss_list, loss_sum = epochVal(model, val_loader, loss_cls, c_val, val_batch_size)
+
+        result = [round(valLoss, 5),
+                  'auc:', auc,
+                  'loss:', loss_list,
+                  loss_sum]
+
+        with open(ckpt + '_log.csv', 'a', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow(result)
+        print(result)
+
 
 if __name__ == '__main__':
-    # os.environ['CUDA_VISIBLE_DEVICES'] = '6,7'
-
     csv_path = '../data/stage1_train_cls.csv'
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("-backbone", "--backbone", type=str, default='DenseNet121_change_avg', help='backbone')
     parser.add_argument("-img_size", "--Image_size", type=int, default=256, help='image_size')
-    parser.add_argument("-tbs", "--train_batch_size", type=int, default=64, help='train_batch_size')
-    parser.add_argument("-vbs", "--val_batch_size", type=int, default=64, help='val_batch_size')
+    parser.add_argument("-tbs", "--train_batch_size", type=int, default=32, help='train_batch_size')
+    parser.add_argument("-vbs", "--val_batch_size", type=int, default=32, help='val_batch_size')
     parser.add_argument("-save_path", "--model_save_path", type=str,
                         default='DenseNet169_change_avg', help='epoch')
     args = parser.parse_args()
@@ -207,3 +272,4 @@ if __name__ == '__main__':
     print('val batch size:', val_batch_size)
     snapshot_path = 'data_test/' + args.model_save_path.replace('\n', '').replace('\r', '')
     train(backbone, Image_size)
+    # valid_snapshot(backbone, Image_size)

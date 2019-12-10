@@ -7,21 +7,11 @@ import gc
 import pandas as pd
 import cv2
 import csv
-import random
-from sklearn.metrics.ranking import roc_auc_score
 from torch.utils.data import DataLoader
-import torch
-from sklearn.metrics import log_loss
-import torch.utils.data as data
-from models.models import *
 from dataset.dataset import *
 from tuils.tools import *
 from tqdm import tqdm
-from sklearn.metrics import f1_score
 import torch.nn as nn
-import torchvision
-import torch.nn.functional as F
-import matplotlib.pyplot as plt
 import numpy as np
 import random
 import math
@@ -149,14 +139,12 @@ def randomShiftScaleRotate(image,
                                     borderValue=(
                                         0, 0,
                                         0,))
-
     return image
 
 
 def aug_image(image, is_infer=False, augment = [0,0]):
 
     if is_infer:
-        # return image
         image = randomHorizontalFlip(image, u=augment[0])
         image = np.asarray(image)
         image = cropping(image, ratio=0.8, code=augment[1])
@@ -207,6 +195,7 @@ class PredictionDatasetPure:
             filename = self.name_list[idx % len(self.name_list)]
             image_cat = cv2.imread('/home1/kaggle_rsna2019/process/train_concat_3images_256/' + filename)
             label = torch.FloatTensor(self.df[self.df['filename']==filename].loc[:, 'any':'subdural'].values)
+
         if self.mode == 'test':
             filename = self.name_list[idx % len(self.name_list)]
             image_cat = cv2.imread('/home1/kaggle_rsna2019/process/stage2_test_concat_3images/' + filename)
@@ -247,6 +236,7 @@ class PredictionDatasetAug:
             image_cat = cv2.cvtColor(image_cat, cv2.COLOR_BGR2RGB)
         else:
             image_cat
+
         image_cat = randomHorizontalFlip(image_cat, u=0.5)
         height, width, _ = image_cat.shape
         ratio = random.uniform(0.6,0.99)
@@ -261,7 +251,7 @@ def predict(model, name_list, df_all, df_test, batch_size: int, n_test_aug: int,
             dataset=PredictionDatasetAug(name_list, df_all, df_test, n_test_aug, mode),
             shuffle=False,
             batch_size=batch_size,
-            num_workers=24,
+            num_workers=16,
             pin_memory=True
         )
     else:
@@ -269,24 +259,23 @@ def predict(model, name_list, df_all, df_test, batch_size: int, n_test_aug: int,
             dataset=PredictionDatasetPure(name_list, df_all, df_test, n_test_aug, mode),
             shuffle=False,
             batch_size=batch_size,
-            num_workers=24,
+            num_workers=16,
             pin_memory=True
         )
 
     model.eval()
-    all_outputs = []
+
     all_names = []
-    all_truth = []
-    
     all_outputs = torch.FloatTensor().cuda()
     all_truth = torch.FloatTensor().cuda()
+
     features_list = {}
     for names, inputs, labels in tqdm(loader, desc='Predict'):
         labels = labels.view(-1, 6).contiguous().cuda(async=True)
         all_truth = torch.cat((all_truth, labels), 0)
         with torch.no_grad():
             inputs = torch.autograd.variable(inputs).cuda(async=True)
-        # outputs, feature = model(inputs)
+
         if backbone == 'DenseNet121_change_avg':
             feature = model.module.densenet121(inputs)      
             feature = model.module.relu(feature)
@@ -298,6 +287,7 @@ def predict(model, name_list, df_all, df_test, batch_size: int, n_test_aug: int,
                 else:
                     features_list[name] += feature[index,:].cpu().detach().numpy()/10
             feature = model.module.mlp(feature)
+
         elif backbone == 'DenseNet169_change_avg':
             feature = model.module.densenet169(inputs)      
             feature = model.module.relu(feature)
@@ -309,6 +299,7 @@ def predict(model, name_list, df_all, df_test, batch_size: int, n_test_aug: int,
                 else:
                     features_list[name] += feature[index,:].cpu().detach().numpy()/10
             feature = model.module.mlp(feature)
+
         elif backbone == 'se_resnext101_32x4d':
             feature = model.module.model_ft.layer0(inputs)
             feature = model.module.model_ft.layer1(feature)
@@ -316,8 +307,7 @@ def predict(model, name_list, df_all, df_test, batch_size: int, n_test_aug: int,
             feature = model.module.model_ft.layer3(feature)
             feature = model.module.model_ft.layer4(feature)
             feature = model.module.model_ft.avg_pool(feature)
-            if model.module.model_ft.dropout is not None:
-                feature = self.dropout(feature)
+
             feature = feature.view(feature.size(0), -1)
 
             for index, name in enumerate(names):
@@ -325,6 +315,7 @@ def predict(model, name_list, df_all, df_test, batch_size: int, n_test_aug: int,
                     features_list[name] = feature[index,:].cpu().detach().numpy()/10
                 else:
                     features_list[name] += feature[index,:].cpu().detach().numpy()/10
+
             feature = model.module.model_ft.last_linear(feature)
 
             
@@ -340,7 +331,6 @@ def predict(model, name_list, df_all, df_test, batch_size: int, n_test_aug: int,
 
     datanpGT = all_truth.cpu().numpy()
     datanpPRED = all_outputs.cpu().numpy()
-#     print(datanpPRED.shape, datanpGT.shape)
     return datanpPRED, all_names, datanpGT
 
 def group_aug(val_p_aug, val_names_aug, val_truth_aug):
@@ -368,15 +358,6 @@ def group_aug(val_p_aug, val_names_aug, val_truth_aug):
 
 def predict_all(model_name, image_size):
 
-    valid_transform_aug = albumentations.Compose([
-        albumentations.Normalize(mean=(0.456, 0.456, 0.456), std=(0.224, 0.224, 0.224), max_pixel_value=255.0, p=1.0)
-    ])
-
-    valid_transform_pure = albumentations.Compose([
-        albumentations.Normalize(mean=(0.456, 0.456, 0.456), std=(0.224, 0.224, 0.224), max_pixel_value=255.0, p=1.0)
-    ])
-
-
     for fold in [0,1,2,3,4]:
 
         print(fold)
@@ -388,7 +369,6 @@ def predict_all(model_name, image_size):
         if not os.path.exists(model_snapshot_path + 'prediction/npy_test/'):
             os.makedirs(model_snapshot_path + 'prediction/npy_test/')
 
-            
         prediction_path = model_snapshot_path+'prediction/fold_{fold}'.format(fold=fold)
 
         f_val = open(kfold_path + 'fold{fold}/val.txt'.format(fold=fold), 'r')
@@ -446,14 +426,15 @@ def predict_all(model_name, image_size):
     test_lists_center = []
     val_lists_aug = []
     test_lists_aug = []
+
     prediction_path = model_snapshot_path + 'prediction/'
     for fold in range(5):
-        
         if is_center:
             df_val_center = pd.read_csv(prediction_path + 'fold_{fold}_val_center.csv'.format(fold=fold), index_col=0 )
             val_lists_center.append(df_val_center)
             df_test_center = pd.read_csv(prediction_path + 'fold_{fold}_test_center.csv'.format(fold=fold), index_col=0)
             test_lists_center.append(df_test_center)
+
         if is_aug:
             df_val_aug = pd.read_csv(prediction_path + 'fold_{fold}_val_aug_{num_aug}.csv'.format(fold=fold, num_aug=num_aug), index_col=0)
             val_lists_aug.append(df_val_aug)
