@@ -4,7 +4,7 @@ This is the source code for the first place solution to the [RSNA2019 Intracrani
 Solution write up: [Link](https://www.kaggle.com/c/rsna-intracranial-hemorrhage-detection/discussion/117210#latest-682640).
 
 ## Solutuoin Overview
-![image](docs/overview.png)
+![image](https://github.com/SeuTao/RSNA2019_1st_place_solution/blob/master/docs/overview.png)
 
 #### Dependencies
 - opencv-python==3.4.2
@@ -27,7 +27,7 @@ Solution write up: [Link](https://www.kaggle.com/c/rsna-intracranial-hemorrhage-
 - densenet121_512*512 [\[densenet121\]](https://drive.google.com/open?id=1o0ok-6I2hY1ygSWdZOKmSD84FsEpgDaa)
 
 ## Preprocessing
-![image](https://github.com/SeuTao/RSNA2019_1st_place_solution/blob/master/png/preprocessing.png)
+![image](https://github.com/SeuTao/RSNA2019_1st_place_solution/blob/master/docs/preprocessing.png)
 
 Prepare csv file:
 
