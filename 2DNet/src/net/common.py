@@ -12,7 +12,6 @@ from inspect import isfunction
 import torch
 import torch.nn as nn
 
-
 def conv1x1(in_channels,
             out_channels,
             stride=1,

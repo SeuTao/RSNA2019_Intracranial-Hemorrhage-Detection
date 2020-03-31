@@ -1,4 +1,3 @@
-from torch.utils.data.dataloader import default_collate
 import torch.utils.data as data
 import torch
 import albumentations
@@ -6,7 +5,6 @@ import cv2
 import numpy as np
 import random
 import math
-
 from settings import train_png_dir
 
 def generate_transforms(image_size):
@@ -292,12 +290,10 @@ def aug_image(image, is_infer=False):
 
         ratio = random.uniform(0.6,0.99)
         image = random_cropping(image, ratio=ratio, is_random=True)
-
         return image
 
 
 def generate_dataset_loader(df_all, c_train, train_transform, train_batch_size, c_val, val_transform, val_batch_size, workers):
-
     train_dataset = RSNA_Dataset_train_by_study_context(df_all, c_train, train_transform)
     val_dataset = RSNA_Dataset_val_by_study_context(df_all, c_val, val_transform)
 

@@ -1,5 +1,0 @@
-echo 'start predict py'
-python3 predict.py -backbone DenseNet121_change_avg -img_size 256 -tbs 24 -vbs 24 -spth ../model_snapshot/DenseNet121_change_avg_256
-python3 predict.py -backbone DenseNet169_change_avg -img_size 256 -tbs 16 -vbs 16 -spth ../model_snapshot/DenseNet169_change_avg_256
-python3 predict.py -backbone se_resnext101_32x4d -img_size 256 -tbs 16 -vbs 16 -spth ../model_snapshot/se_resnext101_32x4d_256_fine
-echo 'end predict py'

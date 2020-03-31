@@ -4,7 +4,7 @@ This is the source code for the first place solution to the [RSNA2019 Intracrani
 Solution write up: [Link](https://www.kaggle.com/c/rsna-intracranial-hemorrhage-detection/discussion/117210#latest-682640).
 
 ## Solutuoin Overview
-![image](https://github.com/SeuTao/RSNA2019_1st_place_solution/blob/master/png/overview.png)
+![image](docs/overview.png)
 
 #### Dependencies
 - opencv-python==3.4.2
@@ -15,7 +15,8 @@ Solution write up: [Link](https://www.kaggle.com/c/rsna-intracranial-hemorrhage-
 - torchvision==0.2.1
 
 ### CODE
-- 2DCNN
+- 2DNet
+- 3DNet
 - SequenceModel
 
 # 2D CNN Classifier
@@ -61,19 +62,19 @@ After training the sequence model, the final submission will be ./FinalSubmissio
 # Sequence Models
 
 ## Sequence Model 1
-![image](https://github.com/SeuTao/RSNA2019_1st_place_solution/blob/master/png/s1.png)
+![image](https://github.com/SeuTao/RSNA2019_1st_place_solution/blob/master/docs/s1.png)
 
 ## Sequence Model 2
-![image](https://github.com/SeuTao/RSNA2019_1st_place_solution/blob/master/png/s2.png)
+![image](https://github.com/SeuTao/RSNA2019_1st_place_solution/blob/master/docs/s2.png)
 
 #### Path Setup
 Set data path in ./setting.py
 
 #### download 
-csv.zip: https://drive.google.com/open?id=1qYi4k-DuOLJmyZ7uYYrnomU2U7MrYRBV
 
-feature samples: https://drive.google.com/open?id=1lJgzZoHFu6HI4JBktkGY3qMk--28IUkC
+download [\[csv.zip\]](https://drive.google.com/open?id=1qYi4k-DuOLJmyZ7uYYrnomU2U7MrYRBV)
 
+download [\[feature samples\]](https://drive.google.com/open?id=1lJgzZoHFu6HI4JBktkGY3qMk--28IUkC)
 
 #### Sequence Model Training
 ```

@@ -15,7 +15,7 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau,MultiStepLR
 import torch.utils.data
 
 import torch.utils.data as data
-from models.models import *
+from net.models import *
 from dataset.dataset import *
 from tuils.tools import *
 from tuils.lrs_scheduler import WarmRestart, warm_restart, AdamW, RAdam
@@ -23,7 +23,6 @@ from tuils.loss_function import *
 import torch.nn.functional as F
 from collections import OrderedDict
 import warnings
-import segmentation_models_pytorch as smp
 warnings.filterwarnings('ignore')
 torch.manual_seed(1992)
 torch.cuda.manual_seed(1992)
@@ -32,7 +31,6 @@ random.seed(1992)
 from PIL import ImageFile
 import sklearn
 import copy
-from efficientnet_pytorch.utils import *
 torch.backends.cudnn.benchmark = True
 import argparse
 
@@ -47,10 +45,10 @@ def epochVal(model, dataLoader, loss_cls, c_val, val_batch_size):
         if i == 0:
             ss_time = time.time()
         print(str(i) + '/' + str(int(len(c_val)/val_batch_size)) + '     ' + str((time.time()-ss_time)/(i+1)), end='\r')
-        target = target.view(-1, 6).contiguous().cuda(async=True)
+        target = target.view(-1, 6).contiguous().cuda()
         outGT = torch.cat((outGT, target), 0)
         varInput = torch.autograd.Variable(input)
-        varTarget = torch.autograd.Variable(target.contiguous().cuda(async=True))  
+        varTarget = torch.autograd.Variable(target.contiguous().cuda())
         varOutput = model(varInput)
         lossvalue = loss_cls(varOutput, varTarget)
         valLoss = valLoss + lossvalue.item()
@@ -143,8 +141,8 @@ def train(model_name, image_size):
 
                 print(str(batchID) + '/' + str(int(len(c_train)/train_batch_size)) + '     ' + str((time.time()-ss_time)/(batchID+1)), end='\r')
                 varInput = torch.autograd.Variable(input)
-                target = target.view(-1, 6).contiguous().cuda(async=True)
-                varTarget = torch.autograd.Variable(target.contiguous().cuda(async=True))  
+                target = target.view(-1, 6).contiguous().cuda()
+                varTarget = torch.autograd.Variable(target.contiguous().cuda())
                 varOutput = model(varInput)
                 lossvalue = loss_cls(varOutput, varTarget)
                 trainLoss = trainLoss + lossvalue.item()

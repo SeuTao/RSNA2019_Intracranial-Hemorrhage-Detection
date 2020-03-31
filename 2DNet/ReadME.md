@@ -6,11 +6,11 @@
 - densenet121_512*512 [\[densenet121\]](https://drive.google.com/open?id=1o0ok-6I2hY1ygSWdZOKmSD84FsEpgDaa)
 
 ## Preprocessing
-![image](https://github.com/SeuTao/RSNA2019_1st_place_solution/blob/master/png/preprocessing.png)
+![image](https://github.com/SeuTao/RSNA2019_1st_place_solution/blob/master/docs/preprocessing.png)
 
 Prepare csv file:
 
-download data.zip:  https://drive.google.com/open?id=1buISR_b3HQDU4KeNc_DmvKTYJ1gvj5-3
+download [\[data.zip\]](https://drive.google.com/open?id=1buISR_b3HQDU4KeNc_DmvKTYJ1gvj5-3)
 
 
 1. convert dcm to png
