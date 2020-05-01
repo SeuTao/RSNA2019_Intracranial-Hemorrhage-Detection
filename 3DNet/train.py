@@ -110,22 +110,20 @@ if __name__ == '__main__':
         sets.input_D = 14
         sets.input_H = 28
         sets.input_W = 28
-       
-     
     
     # getting model
     torch.manual_seed(sets.manual_seed)
     model, parameters = generate_model(sets) 
     print (model)
+
     # optimizer
-    if sets.ci_test:
-        params = [{'params': parameters, 'lr': sets.learning_rate}]
-    else:
-        params = [
-                { 'params': parameters['base_parameters'], 'lr': sets.learning_rate }, 
-                { 'params': parameters['new_parameters'], 'lr': sets.learning_rate*100 }
-                ]
-    optimizer = torch.optim.SGD(params, momentum=0.9, weight_decay=1e-3)   
+    # if sets.ci_test:
+    #     params = [{'params': parameters, 'lr': sets.learning_rate}]
+    # else:
+    #     params = [{ 'params': parameters['base_parameters'], 'lr': sets.learning_rate },
+    #               { 'params': parameters['new_parameters'], 'lr': sets.learning_rate*100}]
+
+    optimizer = torch.optim.SGD(params = parameters, lr = sets.learning_rate ,momentum=0.9, weight_decay=1e-3)
     scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.99)
     
     # train from resume
@@ -143,7 +141,8 @@ if __name__ == '__main__':
     if sets.no_cuda:
         sets.pin_memory = False
     else:
-        sets.pin_memory = True    
+        sets.pin_memory = True
+
     training_dataset = BrainS18Dataset(sets.data_root, sets.img_list, sets)
     data_loader = DataLoader(training_dataset, batch_size=sets.batch_size, shuffle=True, num_workers=sets.num_workers, pin_memory=sets.pin_memory)
 

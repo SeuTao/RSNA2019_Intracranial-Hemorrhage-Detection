@@ -1,105 +1,32 @@
-<img src="images/logo.png" align=mid />
 
+# 3DConvNet Solutions for Medical Image Challenges
+This repository contains 3d ConvNet Solutions for Medical Image Challenges.
+The project is based on tencent [MedicalNet](https://github.com/Tencent/MedicalNet) and [MONAI framework](https://monai.io/)
+which provides a series of 3D-ResNet pre-trained models and domain-optimized foundational capabilities for developing healthcare imaging training workflows.
 
-# MedicalNet
-This repository contains a Pytorch implementation of [Med3D: Transfer Learning for 3D Medical Image Analysis](https://arxiv.org/abs/1904.00625). 
-Many studies have shown that the performance on deep learning is significantly affected by volume of training data. The MedicalNet project aggregated the dataset with diverse modalities, target organs, and pathologies to to build relatively large datasets. Based on this dataset, a series of 3D-ResNet pre-trained models and corresponding transfer-learning training code are provided.
-
-### License
-MedicalNet is released under the MIT License (refer to the LICENSE file for detailso).
-
-### Citing MedicalNet
-If you use this code or pre-trained models, please cite the following:
-```
-    @article{chen2019med3d,
-        title={Med3D: Transfer Learning for 3D Medical Image Analysis},
-        author={Chen, Sihong and Ma, Kai and Zheng, Yefeng},
-        journal={arXiv preprint arXiv:1904.00625},
-        year={2019}
-    }
-```
-### Update(2019/07/30)
-We uploaded 4 pre-trained models based on more datasets (23 datasets).
-```
-Model name             : parameters settings
-resnet_10_23dataset.pth: --model resnet --model_depth 10 --resnet_shortcut B
-resnet_18_23dataset.pth: --model resnet --model_depth 18 --resnet_shortcut A
-resnet_34_23dataset.pth: --model resnet --model_depth 34 --resnet_shortcut A
-resnet_50_23dataset.pth: --model resnet --model_depth 50 --resnet_shortcut B
-```
-We transferred the above pre-trained models to the multi-class segmentation task (left lung, right lung and background) on Visceral dataset. The results are as follows:
-<table class="dataintable">
-<tr>
-   <th>Network</th>
-   <th>Pretrain</th>
-   <th>LungSeg(Dice)</th>
-</tr>
-<tr>
-   <td rowspan="2">3D-ResNet10</td>
-   <td>Train from scratch</td>
-   <td>69.31%</td>
-</tr>
-<tr>
-    <td>MedicalNet</td>
-    <td>96.56%</td>
-</tr>
-<tr>
-   <td rowspan="2">3D-ResNet18</td>
-   <td>Train from scratch</td>
-   <td>70.89%</td>
-</tr>
-<tr>
-    <td>MedicalNet</td>
-    <td>94.68%</td>
-</tr>
-<tr>
-   <td rowspan="2">3D-ResNet34</td>
-   <td>Train from scratch</td>
-   <td>75.25%</td>
-</tr>
-<tr>
-    <td>MedicalNet</td>
-    <td>94.14%</td>
-</tr>
-<tr>
-   <td rowspan="2">3D-ResNet50</td>
-   <td>Train from scratch</td>
-   <td>52.94%</td>
-</tr>
-<tr>
-    <td>MedicalNet</td>
-    <td>89.25%</td>
-</tr>
-</table>
-
+### Update(2020/05/01)
+I provide a baseline 3DConvNet code for TReNDS Neuroimaging challenge host on Kaggle. 
 
 ### Contents
 1. [Requirements](#Requirements)
-2. [Installation](#Installation)
-3. [Demo](#Demo)
+2. [Code](#Demo)
 4. [Experiments](#Experiments)
 5. [TODO](#TODO)
-6. [Acknowledgement](#Acknowledgement)
 
 ### Requirements
 - Python 3.7.0
-- PyTorch-0.4.1
-- CUDA Version 9.0
-- CUDNN 7.0.5
+- PyTorch-1.5
+- monai-0.1.0  
 
-### Installation
-- Install Python 3.7.0
-- pip install -r requirements.txt
-
-
-### Demo
-- Structure of data directories
+### Code
+- Structure of data directories base on MedicalNet
 ```
-MedicalNet is used to transfer the pre-trained model to other datasets (here the MRBrainS18 dataset is used as an example).
-MedicalNet/
+/
     |--datasets/：Data preprocessing module
     |   |--brains18.py：MRBrainS18 data preprocessing script
-    |	|--models/：Model construction module
+    |   |--RSNA19.py：RSNA19 data preprocessing script
+    |   |--TReNDs.py：TReNDs data preprocessing script
+    |--models/：Model construction module
     |   |--resnet.py：3D-ResNet network build script
     |--utils/：tools
     |   |--logger.py：Logging script
@@ -113,9 +40,9 @@ MedicalNet/
     |--pretrain/：Pre-trained models storage module
     |--model.py: Network processing script
     |--setting.py: Parameter setting script
-    |--train.py: MRBrainS18 training demo script
-    |--test.py: MRBrainS18 testing demo script
-    |--requirement.txt: Dependent library list
+    |--train_MRBrainS18.py: MRBrainS18 training demo script
+    |--train_TReNDs.py: TReNDs training script
+    |--train_RSNA19.py
     |--README.md
 ```
 
@@ -131,29 +58,8 @@ resnet_152.pth: --model resnet --model_depth 152 --resnet_shortcut B
 resnet_200.pth: --model resnet --model_depth 200 --resnet_shortcut B
 ```
 
-- After successfully completing basic installation, you'll be ready to run the demo.
-1. Clone the MedicalNet repository
-```
-git clone https://github.com/Tencent/MedicalNet
-```
-2. Download data & pre-trained models ([Google Drive](https://drive.google.com/file/d/1399AsrYpQDi1vq6ciKRQkfknLsQQyigM/view?usp=sharing) or [Tencent Weiyun](https://share.weiyun.com/55sZyIx))
+ Download data & pre-trained models from Tencent MedicalNet official repo ([Google Drive](https://drive.google.com/file/d/1399AsrYpQDi1vq6ciKRQkfknLsQQyigM/view?usp=sharing) or [Tencent Weiyun](https://share.weiyun.com/55sZyIx))
 
-    Unzip and move files
-```
-mv MedicalNet_pytorch_files.zip MedicalNet/.
-cd MedicalNet
-unzip MedicalNet_pytorch_files.zip
-```
-3. Run the training code (e.g. 3D-ResNet-50)
-```
-python train.py --gpu_id 0 1    # multi-gpu training on gpu 0,1
-or
-python train.py --gpu_id 0    # single-gpu training on gpu 0
-```
-4. Run the testing code (e.g. 3D-ResNet-50)
-```
-python test.py --gpu_id 0 --resume_path trails/models/resnet_50_epoch_110_batch_0.pth.tar --img_list data/val.txt
-```
 
 ### Experiments
 - Computational Cost 
@@ -202,13 +108,6 @@ GPU：NVIDIA Tesla P40
    <td>0.45</td>
 </tr>
 </table>
-
-- Performance
-```
-Visualization of the segmentation results of our approach vs. the comparison ones after the same training epochs. 
-It has demonstrated that the efficiency for training convergence and accuracy based on our MedicalNet pre-trained models.
-```
-<img src="images/efficiency.gif" width="812" hegiht="294" align=mid />
 
 
 ```
@@ -303,15 +202,7 @@ Results of transfer MedicalNet pre-trained models to lung segmentation (LungSeg)
 - Please refer to [Med3D: Transfer Learning for 3D Medical Image Analysis](https://arxiv.org/abs/1904.00625) for more details：
 
 ### TODO
-- [x] 3D-ResNet series pre-trained models
-- [x] Transfer learning training code
-- [x] Training with multi-gpu
-- [ ] 3D efficient pre-trained models（e.g., 3D-MobileNet, 3D-ShuffleNet）
-- [ ] 2D medical pre-trained models
-- [x] Pre-trained MedicalNet models based on more medical dataset
+- [x] Baseline (pure 3D ConvNet) code for TReNDS Neuroimaging challenge
+- [ ] Code and pretrained models for Intracranial-Hemorrhage-Detection (RSNA2019 challenge dataset)
+- [ ] More baseline code and pretrained models for recent Medical Image Challenges
 
-### Acknowledgement
-We thank [3D-ResNets-PyTorch](https://github.com/kenshohara/3D-ResNets-PyTorch) and [MRBrainS18](https://mrbrains18.isi.uu.nl/) which we build MedicalNet refer to this releasing code and the dataset.
-
-### Contribution
-If you want to contribute to MedicalNet, be sure to review the [contribution guidelines](https://github.com/Tencent/MedicalNet/blob/master/CONTRIBUTING.md)

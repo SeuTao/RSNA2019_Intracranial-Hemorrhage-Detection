@@ -17,7 +17,10 @@ class BrainS18Dataset(Dataset):
     def __init__(self, root_dir, img_list, sets):
         with open(img_list, 'r') as f:
             self.img_list = [line.strip() for line in f]
+
+        print(self.img_list)
         print("Processing {} datas".format(len(self.img_list)))
+
         self.root_dir = root_dir
         self.input_D = sets.input_D
         self.input_H = sets.input_H
@@ -41,6 +44,7 @@ class BrainS18Dataset(Dataset):
             ith_info = self.img_list[idx].split(" ")
             img_name = os.path.join(self.root_dir, ith_info[0])
             label_name = os.path.join(self.root_dir, ith_info[1])
+
             assert os.path.isfile(img_name)
             assert os.path.isfile(label_name)
             img = nibabel.load(img_name)  # We have transposed the data from WHD format to DHW
