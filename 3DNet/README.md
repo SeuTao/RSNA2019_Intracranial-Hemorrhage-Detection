@@ -1,7 +1,7 @@
 
 # 3DConvNet Solutions for Medical Image Challenges
 This repository contains 3d ConvNet Solutions for Medical Image Challenges.
-The project is based on tencent [MedicalNet](https://github.com/Tencent/MedicalNet) and [MONAI framework](https://monai.io/)
+The project is based on  [Tencent MedicalNet](https://github.com/Tencent/MedicalNet) and [MONAI framework](https://monai.io/)
 which provides a series of 3D-ResNet pre-trained models and domain-optimized foundational capabilities for developing healthcare imaging training workflows.
 
 ### Update(2020/05/01)
@@ -46,6 +46,8 @@ I provide a baseline 3DConvNet code for TReNDS Neuroimaging challenge host on Ka
     |--README.md
 ```
 
+ Download data & pre-trained models from Tencent MedicalNet official repo ([Google Drive](https://drive.google.com/file/d/1399AsrYpQDi1vq6ciKRQkfknLsQQyigM/view?usp=sharing) or [Tencent Weiyun](https://share.weiyun.com/55sZyIx))
+ 
 - Network structure parameter settings
 ```
 Model name   : parameters settings
@@ -58,11 +60,38 @@ resnet_152.pth: --model resnet --model_depth 152 --resnet_shortcut B
 resnet_200.pth: --model resnet --model_depth 200 --resnet_shortcut B
 ```
 
- Download data & pre-trained models from Tencent MedicalNet official repo ([Google Drive](https://drive.google.com/file/d/1399AsrYpQDi1vq6ciKRQkfknLsQQyigM/view?usp=sharing) or [Tencent Weiyun](https://share.weiyun.com/55sZyIx))
+### Baseline for TReNDS Neuroimaging challenge
+- 3D-Resnet10 trained from scratch [Pretrained models](https://drive.google.com/open?id=1mB59NoADt0n4yC-MviMtBUcYCE2YWJZz)
+
+<table class="dataintable">
+<tr>
+   <th class="dataintable">Network</th>
+   <th>Validation Score </th>
+</tr>
+<tr>
+   <td>fold 0</td>
+   <td>0.1700</td>
+</tr class="dataintable">
+<tr>
+   <td>fold 1</td>
+   <td>0.1685</td>
+</tr>
+<tr>
+   <td>fold 2</td>
+   <td>0.1729</td>
+</tr>
+<tr>
+   <td>fold 3</td>
+   <td>0.1734</td>
+</tr>
+<tr>
+   <td>fold 4</td>
+   <td>0.1734</td>
+</tr>
+</table>
 
 
-### Experiments
-- Computational Cost 
+### Computational Cost 
 ```
 GPU：NVIDIA Tesla P40
 ```
@@ -106,96 +135,6 @@ GPU：NVIDIA Tesla P40
    <td>3D-ResNet200</td>
    <td>126.74</td>
    <td>0.45</td>
-</tr>
-</table>
-
-
-```
-Results of transfer MedicalNet pre-trained models to lung segmentation (LungSeg) and pulmonary nodule classification (NoduleCls) with Dice and accuracy evaluation metrics, respectively.
-```
-<table class="dataintable">
-<tr>
-   <th>Network</th>
-   <th>Pretrain</th>
-   <th>LungSeg(Dice)</th>
-   <th>NoduleCls(accuracy)</th>
-</tr>
-<tr>
-   <td rowspan="2">3D-ResNet10</td>
-   <td>Train from scratch</td>
-   <td>71.30%</td>
-   <td>79.80%</td>
-</tr>
-<tr>
-    <td>MedicalNet</td>
-    <td>87.16%</td>
-    <td>86.87%</td>
-</tr>
-<tr>
-   <td rowspan="2">3D-ResNet18</td>
-   <td>Train from scratch</td>
-   <td>75.22%</td>
-   <td>80.80%</td>
-</tr>
-<tr>
-    <td>MedicalNet</td>
-    <td>87.26%</td>
-    <td>88.89%</td>
-</tr>
-<tr>
-   <td rowspan="2">3D-ResNet34</td>
-   <td>Train from scratch</td>
-   <td>76.82%</td>
-   <td>83.84%</td>
-</tr>
-<tr>
-    <td>MedicalNet</td>
-    <td>89.31%</td>
-    <td>89.90%</td>
-</tr>
-<tr>
-   <td rowspan="2">3D-ResNet50</td>
-   <td>Train from scratch</td>
-   <td>71.75%</td>
-   <td>84.85%</td>
-</tr>
-<tr>
-    <td>MedicalNet</td>
-    <td>93.31%</td>
-    <td>89.90%</td>
-</tr>
-<tr>
-   <td rowspan="2">3D-ResNet101</td>
-   <td>Train from scratch</td>
-   <td>72.10%</td>
-   <td>81.82%</td>
-</tr>
-<tr>
-    <td>MedicalNet</td>
-    <td>92.79%</td>
-    <td>90.91%</td>
-</tr>
-<tr>
-   <td rowspan="2">3D-ResNet152</td>
-   <td>Train from scratch</td>
-   <td>73.29%</td>
-   <td>73.74%</td>
-</tr>
-<tr>
-    <td>MedicalNet</td>
-    <td>92.33%</td>
-    <td>90.91%</td>
-</tr>
-<tr>
-   <td rowspan="2">3D-ResNet200</td>
-   <td>Train from scratch</td>
-   <td>71.29%</td>
-   <td>76.77%</td>
-</tr>
-<tr>
-    <td>MedicalNet</td>
-    <td>92.06%</td>
-    <td>90.91%</td>
 </tr>
 </table>
 
