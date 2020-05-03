@@ -63,33 +63,10 @@ resnet_200.pth: --model resnet --model_depth 200 --resnet_shortcut B
 ### Baseline for TReNDS Neuroimaging challenge
 - 3D-Resnet10 trained from scratch [Pretrained models](https://drive.google.com/open?id=1mB59NoADt0n4yC-MviMtBUcYCE2YWJZz)
 
-<table class="dataintable">
-<tr>
-   <th class="dataintable">Network</th>
-   <th>Validation Score </th>
-</tr>
-<tr>
-   <td>fold 0</td>
-   <td>0.1700</td>
-</tr class="dataintable">
-<tr>
-   <td>fold 1</td>
-   <td>0.1685</td>
-</tr>
-<tr>
-   <td>fold 2</td>
-   <td>0.1729</td>
-</tr>
-<tr>
-   <td>fold 3</td>
-   <td>0.1734</td>
-</tr>
-<tr>
-   <td>fold 4</td>
-   <td>0.1734</td>
-</tr>
-</table>
-
+Network | fold 0| fold 1| fold 2| fold 3| fold 4|
+---|---|---|---|---|---|
+3D-Resnet10 Train from scratch|0.1700|0.1685|0.1729|0.1734|0.1734
+3D-Resnet10 MedicalNet pretrained|0.1694|0.1691|0.1726|0.1746|0.1734
 
 ### Computational Cost 
 ```
