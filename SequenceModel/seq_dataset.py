@@ -1,3 +1,4 @@
+import os
 from torch.utils.data import Dataset
 from sklearn.model_selection import KFold
 import torch
@@ -6,7 +7,6 @@ from check_feature import *
 from settings import *
 import random
 import numpy as np
-import os
 
 class StackingDataset_study(Dataset):
     def __init__(self, dict_, X,Y, index, seq_len = 32, mode='train' , reverse = False, Add_position = False):
@@ -25,14 +25,14 @@ class StackingDataset_study(Dataset):
         self.mode = mode
 
         if mode == 'train' or mode == 'valid':
-            self.all_df = pd.read_csv(r'./csv/train_meta_id_seriser.csv')
+            self.all_df = pd.read_csv(rf'{csv_root}/train_meta_id_seriser.csv')
             self.StudyInstance = list(self.all_df['StudyInstance'].unique())
             self.index = index
             self.len = len(index)
 
         elif mode == 'test':
             self.index = index
-            self.all_df = pd.read_csv(r'./csv/test_meta_id_seriser_stage2.csv')
+            self.all_df = pd.read_csv(rf'{csv_root}/test_meta_id_seriser_stage2.csv')
             self.StudyInstance = list(self.all_df['StudyInstance'].unique())
             self.len = len(self.StudyInstance)
 
@@ -49,12 +49,13 @@ class StackingDataset_study(Dataset):
             StudyInstance = self.StudyInstance[index]
 
         if StudyInstance not in self.study_dict:
-            self.study_dict[StudyInstance] = pd.read_csv(os.path.join(study_path, 'study_csv', StudyInstance + '.csv'))
+            self.study_dict[StudyInstance] = pd.read_csv(os.path.join(csv_root, 'study_csv', StudyInstance + '.csv'))
 
         same_StudyInstance = self.study_dict[StudyInstance]
         same_StudyInstance.reset_index(drop=True)
-        all_index = same_StudyInstance.index.to_list()
-        Position2 = same_StudyInstance.Position2.to_list()
+
+        all_index = same_StudyInstance.index.values#.to_list()
+        Position2 = same_StudyInstance.Position2.values#.to_list()
 
         if self.mode == 'train' and len(all_index) > 10:
             if random.randint(0,1) == 0:
@@ -185,17 +186,12 @@ class StackingDataset_study(Dataset):
 
 def run_check_train_data():
     kf = KFold(n_splits=5, shuffle=True, random_state=48)
-    all_df = pd.read_csv(r'./csv/train_meta_id_seriser.csv')
+    all_df = pd.read_csv(rf'{csv_root}/train_meta_id_seriser.csv')
     StudyInstance = list(all_df['StudyInstance'].unique())
     print(len(StudyInstance))
     dict_ = get_train_dict()
     for s_fold, (train_idx, val_idx) in enumerate(kf.split(StudyInstance)):
-        print(train_idx)
-        print(val_idx)
-
         dataset = StackingDataset_study(dict_, X,y, train_idx, seq_len = 32, mode='valid', reverse=True, Add_position=True)
-
-        print(dataset)
         num = len(dataset)
         for m in range(num):
             i = np.random.choice(num)
@@ -208,14 +204,12 @@ def run_check_test_data():
     test_id_dict = get_test_dict()
     dataset = StackingDataset_study(test_id_dict, X_test, None, None, seq_len=-1, mode='test')
 
-    print(dataset)
     num = len(dataset)
     for m in range(num):
         i = np.random.choice(num)
         ids, image = dataset[i]
         print(ids)
         print(image.shape)
-    return
 
 if __name__ == '__main__':
     run_check_train_data()
