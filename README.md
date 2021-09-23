@@ -86,7 +86,15 @@ The final submissions are in the folder ../FinalSubmission/version2/submission_t
 ### Private Leaderboard:
 - 0.04383
 
-### TODO
-- [ ] Pre-trained models
-- [ ] 2DCNN + SeqModel end-to-end training 
-- [ ] 3DCNN training
+## Citation
+```
+@article{wang2021deep,
+  title={A deep learning algorithm for automatic detection and classification of acute intracranial hemorrhages in head CT scans},
+  author={Wang, Xiyue and Shen, Tao and Yang, Sen and Lan, Jun and Xu, Yanming and Wang, Minghui and Zhang, Jing and Han, Xiao},
+  journal={NeuroImage: Clinical},
+  volume={32},
+  pages={102785},
+  year={2021},
+  publisher={Elsevier}
+}
+```
