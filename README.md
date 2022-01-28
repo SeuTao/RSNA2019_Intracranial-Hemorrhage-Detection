@@ -1,6 +1,19 @@
 # RSNA Intracranial Hemorrhage Detection
 This is the source code for the first place solution to the [RSNA2019 Intracranial Hemorrhage Detection Challenge](https://www.kaggle.com/c/rsna-intracranial-hemorrhage-detection).
 
+## Citation
+```
+@article{wang2021deep,
+  title={A deep learning algorithm for automatic detection and classification of acute intracranial hemorrhages in head CT scans},
+  author={Wang, Xiyue and Shen, Tao and Yang, Sen and Lan, Jun and Xu, Yanming and Wang, Minghui and Zhang, Jing and Han, Xiao},
+  journal={NeuroImage: Clinical},
+  volume={32},
+  pages={102785},
+  year={2021},
+  publisher={Elsevier}
+}
+```
+
 Solution write up: [Link](https://www.kaggle.com/c/rsna-intracranial-hemorrhage-detection/discussion/117210#latest-682640).
 
 ## Solutuoin Overview
@@ -86,15 +99,4 @@ The final submissions are in the folder ../FinalSubmission/version2/submission_t
 ### Private Leaderboard:
 - 0.04383
 
-## Citation
-```
-@article{wang2021deep,
-  title={A deep learning algorithm for automatic detection and classification of acute intracranial hemorrhages in head CT scans},
-  author={Wang, Xiyue and Shen, Tao and Yang, Sen and Lan, Jun and Xu, Yanming and Wang, Minghui and Zhang, Jing and Han, Xiao},
-  journal={NeuroImage: Clinical},
-  volume={32},
-  pages={102785},
-  year={2021},
-  publisher={Elsevier}
-}
-```
+
