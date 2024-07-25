@@ -1,6 +1,6 @@
 pandas==0.25.0
 numpy==1.22.0
-torch==1.1.0
+torch==2.2.0
 torchvision==0.3.0
 git+git://github.com/albu/albumentations.git
 tqdm
